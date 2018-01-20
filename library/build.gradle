@@ -1,0 +1,24 @@
+apply plugin: 'com.android.library'
+android {
+    compileSdkVersion 15
+    defaultConfig {
+        minSdkVersion 3
+        targetSdkVersion 15
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath false
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+    buildToolsVersion '27.0.3'
+}
+
+dependencies {
+}
