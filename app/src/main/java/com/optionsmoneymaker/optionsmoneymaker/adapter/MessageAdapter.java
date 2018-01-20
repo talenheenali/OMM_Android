@@ -73,19 +73,9 @@ public class MessageAdapter extends ArrayAdapter<MessageData> {
             convertView.setTag(holder);
         }
 
-//        try {
-//            SimpleDateFormat serverDateFormat = new SimpleDateFormat(Constants.SERVER_DATETIME_FORMAT, Locale.US);
-//            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATETIME_FORMAT, Locale.US);
-//            //Converting the String back to java.util.Date
-//            Date date = serverDateFormat.parse(getItem(position).getDateTime());
-//
-//            holder.txtDate.setText(dateFormat.format(date));
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-
         holder.txtProName.setText(getItem(position).getProductName());
         holder.txtMessage.setText(Html.fromHtml(getItem(position).getTitle()));
+        holder.txtDate.setText(getItem(position).getDateTime());
 
         if (getItem(position).getIsRead().equalsIgnoreCase("1")) {
             //convertView.setBackground(context.getResources().getDrawable(R.drawable.btn_dark_grey));
@@ -103,10 +93,12 @@ public class MessageAdapter extends ArrayAdapter<MessageData> {
             holder.txtProName.setTypeface(Typeface.DEFAULT_BOLD);
             holder.txtDate.setTypeface(Typeface.DEFAULT_BOLD);
             holder.txtMessage.setTypeface(Typeface.DEFAULT_BOLD);
+
         }
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 try {
                     getItem(position).setIsRead("1");
                     msgList.get(position).setIsRead("1");
@@ -121,6 +113,7 @@ public class MessageAdapter extends ArrayAdapter<MessageData> {
 
                     SessionManager session = new SessionManager(context);
                     session.setLatestMessage(jsonObject.toString());
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

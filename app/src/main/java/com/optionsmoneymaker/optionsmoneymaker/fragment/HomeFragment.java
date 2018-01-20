@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,25 +14,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.onesignal.OSNotification;
 import com.onesignal.OSNotificationPayload;
 import com.onesignal.OneSignal;
-import com.optionsmoneymaker.optionsmoneymaker.CallBacks;
+import com.optionsmoneymaker.optionsmoneymaker.adapter.MessageAdapter;
+import com.optionsmoneymaker.optionsmoneymaker.interfaces.CallBacks;
 import com.optionsmoneymaker.optionsmoneymaker.OptionMoneyMaker;
 import com.optionsmoneymaker.optionsmoneymaker.R;
-import com.optionsmoneymaker.optionsmoneymaker.adapter.MessageAdapter;
 import com.optionsmoneymaker.optionsmoneymaker.adapter.NewMessageAdapter;
-import com.optionsmoneymaker.optionsmoneymaker.interfaces.ListLoaderCallbacks;
 import com.optionsmoneymaker.optionsmoneymaker.model.MessageData;
 import com.optionsmoneymaker.optionsmoneymaker.model.MessageEvent;
-import com.optionsmoneymaker.optionsmoneymaker.pulltorefresh.PullToRefreshBase;
-import com.optionsmoneymaker.optionsmoneymaker.pulltorefresh.PullToRefreshView;
 import com.optionsmoneymaker.optionsmoneymaker.rest.RestClient;
 import com.optionsmoneymaker.optionsmoneymaker.sqlitedb.DatabaseHandler;
-import com.optionsmoneymaker.optionsmoneymaker.utils.Constants;
 import com.optionsmoneymaker.optionsmoneymaker.utils.DeliveryInterface;
 import com.optionsmoneymaker.optionsmoneymaker.utils.SessionManager;
 
@@ -41,6 +38,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 import butterknife.ButterKnife;
@@ -52,7 +50,7 @@ import retrofit.mime.TypedByteArray;
 /**
  * Created by Sagar on 10/1/2016.
  */
-public class HomeFragment extends BaseFragment implements DeliveryInterface , CallBacks {
+public class HomeFragment extends BaseFragment implements DeliveryInterface, CallBacks {
 
     ProgressBar progressBar;
     RecyclerView recyclerView;
@@ -71,7 +69,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface , Ca
         super.onCreate(savedInstanceState);
 
         OptionMoneyMaker.setHomeFragmentContext(HomeFragment.this);
-        Log.v("ajtrial","at 65 in homefrag onCreate hit");
+        Log.v("ajtrial", "at 65 in homefrag onCreate hit");
 
     }
 
@@ -80,7 +78,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface , Ca
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, rootView);
-        Log.v("ajtrial","at 75 in homefrag onCreateView hit");
+        Log.v("ajtrial", "at 75 in homefrag onCreateView hit");
         recyclerView = rootView.findViewById(R.id.recyclerView);
         progressBar = rootView.findViewById(R.id.progressBar);
 
@@ -96,21 +94,62 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface , Ca
         progressBar = new ProgressBar(getActivity());
         progressBar.setVisibility(View.VISIBLE);
 
-        list = new ArrayList<MessageData>();
-        SessionManager session = new SessionManager(getActivity());
-
-       // list = session.getLatestMessage().getData();
-        progressBar.setVisibility(View.VISIBLE);
-        list = new DatabaseHandler().getAllNotifs();
-        messageAdapter = new NewMessageAdapter(getActivity(),list);
         mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(messageAdapter);
-        progressBar.setVisibility(View.GONE);
+
+        list = new ArrayList<MessageData>();
+
+        progressBar.setVisibility(View.VISIBLE);
+        reload();
 
     }
 
+
+    public void reload() {
+
+        if (cd.isConnectingToInternet()) {
+            hideKeyboard();
+            RestClient.getMoneyMaker().lastMessage(session.getUserID(), new Callback<Response>() {
+                @Override
+                public void success(Response result, Response response) {
+                    dismiss();
+                    try {
+                        JSONObject main = new JSONObject(new String(((TypedByteArray) response.getBody()).getBytes()));
+
+                        if ((int) main.getInt("status") == 1) {
+
+                            session.setFirstTime(false);
+
+                            //session.setLatestMessage(main.toString());
+
+                            Log.v("datalog", "at 195 homefrag " + main.toString());
+
+                            new DatabaseHandler().syncWithWeb(main.toString());
+                            list = new DatabaseHandler().getAllNotifs();
+                            Collections.reverse(list);
+                            messageAdapter = new NewMessageAdapter(getActivity(), list);
+                            recyclerView.setAdapter(messageAdapter);
+                            //  progressBar.setVisibility(View.GONE);
+
+                        } else if ((int) main.getInt("status") == 0) {
+                            Toast.makeText(getActivity(), "No Data Found.", Toast.LENGTH_SHORT).show();
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    Log.e("Home", "API failure " + error);
+                    dismiss();
+                }
+            });
+
+        }
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -146,9 +185,9 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface , Ca
     @Override
     public void onResume() {
 
-    super.onResume();
+        super.onResume();
 
-        Log.v("ajtrial","at 181 in homefrag onresume hit");
+        Log.v("ajtrial", "at 181 in homefrag onresume hit");
 
         if (session.getFirstTime()) {
 
@@ -158,7 +197,8 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface , Ca
 
             progressBar.setVisibility(View.VISIBLE);
             list = new DatabaseHandler().getAllNotifs();
-            messageAdapter = new NewMessageAdapter(getActivity(),list);
+            Collections.reverse(list);
+            messageAdapter = new NewMessageAdapter(getActivity(), list);
             mLayoutManager = new LinearLayoutManager(getActivity());
             recyclerView.setLayoutManager(mLayoutManager);
             recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -169,27 +209,15 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface , Ca
         }
     }
 
-    public void refreshView(Context context) {
-
-        list = new ArrayList<MessageData>();
-        SessionManager session = new SessionManager(context);
-        list = session.getLatestMessage().getData();
-        // TODO: 12/15/2017 replace context by activity context
-        messageAdapter = new NewMessageAdapter(context, list);
-        recyclerView.setAdapter(messageAdapter);
-
-
-    }
 
     @Override
     public void getUpdatedPayload(OSNotificationPayload notificationPayload) {
 
-        Log.v("ajtrial","at 208 in homefrag");
+        Log.v("ajtrial", "at 208 in homefrag data is " + notificationPayload.toJSONObject().toString());
 
         try {
 
-            JSONObject jsonObject = new JSONObject();
-            jsonObject = notificationPayload.toJSONObject();
+            JSONObject jsonObject = notificationPayload.toJSONObject();
 
             String title = jsonObject.getString("title");
             String body = jsonObject.getString("body");
@@ -202,7 +230,9 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface , Ca
             long d = new Date().getTime();
             data.setDateTime(String.valueOf(d));
             messageAdapter.addNewItemToList(data);
-            Log.v("ajtrial","at 226 in home frag add new item complete hit");
+
+            new DatabaseHandler().storeNewNotif(data);
+            Log.v("ajtrial", "at 226 in home frag add new item complete hit");
 
             recyclerView.smoothScrollToPosition(0);
             AlertDialog.Builder builder;
@@ -234,24 +264,47 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface , Ca
 
 
     @Override
-    public void callback(String msgId,String str) {
+    public void callback(String msgId, String str) {
 
-            Log.v("callback","received "+str);
+        Log.v("callback", "received " + str);
+        if (str.equals("Delete")) {
 
             for(int i = 0 ; i < list.size() ; i++){
-
-                       if((list.get(i).getId()).equals(msgId)){
-                           Log.v("callback","found at "+i);
-                            if(str.equals("mark_message_unread")){
-                                list.get(i).setIsRead("2");
-                            }else if(str.equals("message_read")){
-                                list.get(i).setIsRead("1");
-                            }
-
-                           messageAdapter.notifyDataSetChanged();
-                       }
+                if(list.get(i).getId().equals(msgId)){
+                    list.remove(i);
+                    messageAdapter.notifyItemRemoved(i);
+                    new DatabaseHandler().deleteNotif(Integer.parseInt(msgId));
+                }
             }
 
+        } else {
+
+
+            for (int i = 0; i < list.size(); i++) {
+
+                if ((list.get(i).getId()).equals(msgId)) {
+                    Log.v("callback", "found at " + i);
+                    if (str.equals("mark_message_unread")) {
+
+                        list.get(i).setIsRead("2");
+                        MessageData tempData = list.get(i);
+                        tempData.setIsRead("2");
+                        new DatabaseHandler().updateNotif(tempData);
+
+                    } else if (str.equals("message_read")) {
+
+                        list.get(i).setIsRead("1");
+                        MessageData tempData = list.get(i);
+                        tempData.setIsRead("1");
+                        new DatabaseHandler().updateNotif(tempData);
+
+                    }
+
+                    messageAdapter.notifyDataSetChanged();
+                }
+            }
+
+        }
     }
 
 

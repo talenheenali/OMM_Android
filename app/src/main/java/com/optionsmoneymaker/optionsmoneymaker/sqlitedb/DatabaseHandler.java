@@ -20,7 +20,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     SQLiteDatabase sqLiteDatabase;
 
-     // Database Version
+    // Database Version
     private static final int DATABASE_VERSION = 1;
 
     // Database Name
@@ -69,7 +69,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-      //  SimpleDateFormat sdf = new SimpleDateFormat(InfoResources.DateFormatForView);
+        //  SimpleDateFormat sdf = new SimpleDateFormat(InfoResources.DateFormatForView);
         values.put("NOTIF_ID", messageDataModel.getId());
         values.put("NOTIF_TITLE", messageDataModel.getTitle());
         values.put("NOTIF_PRODUCT_NAME",  messageDataModel.getProductName());
@@ -78,7 +78,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put("NOTIF_ISREAD", messageDataModel.getIsRead());
 
         long returnId = sqLiteDatabase.insert(TABLE_NOTIFS_MASTER, null, values);
-        Log.v("DBDEBUG", "newly inserted row id is = " + returnId + " , in table - " + TABLE_NOTIFS_MASTER);
+        Log.v("dbdemo", "newly inserted row id is = " + returnId + " , in table - " + TABLE_NOTIFS_MASTER);
 
         sqLiteDatabase.close(); // Closing database connection
         return returnId;
@@ -104,13 +104,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
                     messageDataModel = new MessageData();
                     messageDataModel.setId((cursor.getString(0)));
+                    Log.v("dbdemo","fetching - "+(cursor.getInt(0)));
                     messageDataModel.setTitle((cursor.getString(1)));
                     messageDataModel.setProductName((cursor.getString(2)));
                     messageDataModel.setDateTime((cursor.getString(3)));
                     messageDataModel.setMessage((cursor.getString(4)));
                     messageDataModel.setIsRead((cursor.getString(5)));
                     arrayList.add(messageDataModel);
-                    Log.v("inspect","select query cust_id = "+(cursor.getInt(0)));
 
                 } while (cursor.moveToNext());
             }
@@ -133,10 +133,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put("NOTIF_ISREAD", messageDataModel.getIsRead());
 
         // updating row
-        int res = sqLiteDatabase.update(TABLE_NOTIFS_MASTER, values, "ID" + " = '" + messageDataModel.getId() + "'", null);
-        Log.v("DBDEBUG","updation to notif master , result = "+res);
+        int res = sqLiteDatabase.update(TABLE_NOTIFS_MASTER, values, "NOTIF_ID" + " = " + messageDataModel.getId() , null);
+        Log.v("dbdemo","updation to notif master , result = "+res);
 
         sqLiteDatabase.close();
+
+    }
+
+    public void syncAndStoreIntoDb(ArrayList<MessageData> arrayList){
+
+        MessageData messageDataModel;
+
+           //collect the server response into arraylist
+             for(int i = 0 ; i < arrayList.size(); i++){
+
+                messageDataModel = arrayList.get(i);
+                storeNewNotif(messageDataModel);
+
+            }
 
     }
 
@@ -159,11 +173,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
                 messageDataModel = new MessageData();
                 messageDataModel.setId(jsonObject1.getString("id"));
-                messageDataModel.setId(jsonObject1.getString("title"));
-                messageDataModel.setId(jsonObject1.getString("product_name"));
-                messageDataModel.setId(jsonObject1.getString("date_time"));
-                messageDataModel.setId(jsonObject1.getString("message"));
-                messageDataModel.setId(jsonObject1.getString("isRead"));
+                messageDataModel.setTitle(jsonObject1.getString("title"));
+                messageDataModel.setProductName(jsonObject1.getString("product_name"));
+                messageDataModel.setDateTime(jsonObject1.getString("date_time"));
+                messageDataModel.setMessage(jsonObject1.getString("message"));
+                messageDataModel.setIsRead(jsonObject1.getString("isRead"));
                 arrayList.add(messageDataModel);
 
             }
@@ -178,6 +192,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
     }
+
+    public void deleteNotif(int notifId){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        int res = db.delete(TABLE_NOTIFS_MASTER, "NOTIF_ID" + " = "+notifId  , null);
+        Log.v("deleteLog","delete return value from "+TABLE_NOTIFS_MASTER+" - "+res);
+        db.close();
+
+    }
+
 
 
 }

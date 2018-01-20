@@ -27,6 +27,7 @@ import com.optionsmoneymaker.optionsmoneymaker.fragment.HomeFragment;
 import com.optionsmoneymaker.optionsmoneymaker.model.MessageData;
 import com.optionsmoneymaker.optionsmoneymaker.model.NotificationResult;
 import com.optionsmoneymaker.optionsmoneymaker.rest.RestClient;
+import com.optionsmoneymaker.optionsmoneymaker.sqlitedb.DatabaseHandler;
 import com.optionsmoneymaker.optionsmoneymaker.utils.ConnectionDetector;
 import com.optionsmoneymaker.optionsmoneymaker.utils.Constants;
 import com.optionsmoneymaker.optionsmoneymaker.utils.DeliveryInterface;
@@ -50,6 +51,7 @@ import retrofit.mime.TypedByteArray;
 /**
  * Created by Sagar on 07-10-2016.
  */
+
 public class OptionMoneyMaker extends Application {
 
     private static MainActivity mainActivityContext;
@@ -109,7 +111,6 @@ public class OptionMoneyMaker extends Application {
     protected void attachBaseContext(Context base)
     {
         super.attachBaseContext(base);
-        //  ACRA.init(this);
         MultiDex.install(OptionMoneyMaker.this);
     }
 
@@ -117,16 +118,17 @@ public class OptionMoneyMaker extends Application {
         return mInstance;
     }
 
-
     private class ExampleNotificationOpenedHandler implements OneSignal.NotificationOpenedHandler {
-        // This fires when a notification is opened by tapping on it.
+
         @Override
         public void notificationOpened(OSNotificationOpenResult result) {
+
+            Log.v("Notifnew","notification opened "+result.notification.payload);
 
             if (cd.isConnectingToInternet()) {
 
                 OSNotificationAction.ActionType actionType = result.action.type;
-                JSONObject data = result.notification.payload.additionalData;
+                final JSONObject data = result.notification.payload.additionalData;
                 String msgID = "";
 
                 if (data != null) {
@@ -134,7 +136,7 @@ public class OptionMoneyMaker extends Application {
                 }
 
                 if (actionType == OSNotificationAction.ActionType.ActionTaken)
-                    Log.i("OneSignalExample", "Button pressed with id: " + result.action.actionID);
+                    Log.v("Notifnew", "Button pressed with id: " + result.action.actionID);
 
                 SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
                 String strTime = dateFormatter.format(new Date());
@@ -144,40 +146,24 @@ public class OptionMoneyMaker extends Application {
                             @Override
                             public void success(NotificationResult result, Response response) {
                                 if ((int) result.getStatus() == 1) {
+
+                                    MessageData data1 = new MessageData();
+                                    Log.v("Notifnew", "at 151 in app class data - " + result.getData());
+                                    Log.v("Notifnew", "at 152 in app class response reason - " + response.getReason());
+                                    Log.v("Notifnew", "at 152 in app class response body - " + response.getBody());
+                                    Log.v("Notifnew", "at 152 in app class headers - " + response.getHeaders());
+                                    Log.v("Notifnew", "at 152 in app class status - " + response.getStatus());
+
                                 } else if ((int) result.getStatus() == 0) {
+                                    Log.v("Notifnew", "at 158 in app class status code zero so didnt read anything");
                                 }
                             }
 
                             @Override
                             public void failure(RetrofitError error) {
-                                Log.e("OptionMoneyMaker", "API failure " + error);
+                                Log.v("Notifnew", "API failure " + error);
                             }
                         });
-
-                try {
-                    ArrayList<MessageData> list = new ArrayList<MessageData>();
-                    list = session.getLatestMessage().getData();
-                    if (list != null && list.size() > 0) {
-                        for (int i = 0; i < list.size(); i++) {
-                            if (msgID.equalsIgnoreCase(list.get(i).getId())) {
-                                list.get(i).setIsRead("1");
-                                // create a new Gson instance
-                                Gson gson = new Gson();
-                                // convert your list to json
-                                String jsonMsgList = gson.toJson(list);
-                                JSONArray jsonArray = new JSONArray(jsonMsgList);
-                                JSONObject jsonObject = new JSONObject();
-                                jsonObject.put("status", 1);
-                                jsonObject.put("data", jsonArray);
-
-                                session.setLatestMessage(jsonObject.toString());
-                                break;
-                            }
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
 
                 // The following can be used to open an Activity of your choice.
                 Intent intent = new Intent(getApplicationContext(), MessageDetailActivity.class);
@@ -185,11 +171,100 @@ public class OptionMoneyMaker extends Application {
                 intent.putExtra(Constants.ID, msgID);
                 intent.putExtra(Constants.TYPE, "notification");
                 startActivity(intent);
+
             } else {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
             }
+
         }
     }
+
+//    private class ExampleNotificationOpenedHandler implements OneSignal.NotificationOpenedHandler {
+//
+//        @Override
+//        public void notificationOpened(OSNotificationOpenResult result) {
+//
+//            Log.v("Notifnew","notification opened "+result.notification.payload);
+//
+//            if (cd.isConnectingToInternet()) {
+//
+//                OSNotificationAction.ActionType actionType = result.action.type;
+//                JSONObject data = result.notification.payload.additionalData;
+//                String msgID = "";
+//
+//                if (data != null) {
+//                    msgID = data.optString("message_id", null);
+//                }
+//
+//                if (actionType == OSNotificationAction.ActionType.ActionTaken)
+//                    Log.v("Notifnew", "Button pressed with id: " + result.action.actionID);
+//
+//                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
+//                String strTime = dateFormatter.format(new Date());
+//
+//                RestClient.getMoneyMaker().messageRead(msgID, session.getUserID(),
+//                        strTime, new Callback<NotificationResult>() {
+//                            @Override
+//                            public void success(NotificationResult result, Response response) {
+//                                if ((int) result.getStatus() == 1) {
+//
+//                                } else if ((int) result.getStatus() == 0) {
+//
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void failure(RetrofitError error) {
+//                                Log.v("Notifnew", "API failure " + error);
+//                            }
+//                        });
+//
+//                try {
+//
+//                    ArrayList<MessageData> list = new ArrayList<MessageData>();
+//                   // list = session.getLatestMessage().getData();
+//
+//                    list = new DatabaseHandler().getAllNotifs();
+//
+//                    if (list != null && list.size() > 0) {
+//
+//                        for (int i = 0; i < list.size(); i++) {
+//
+//                            if (msgID.equalsIgnoreCase(list.get(i).getId())) {
+//
+//                                list.get(i).setIsRead("1");
+//                                // create a new Gson instance
+//                                Gson gson = new Gson();
+//                                // convert your list to json
+//                                String jsonMsgList = gson.toJson(list);
+//                                JSONArray jsonArray = new JSONArray(jsonMsgList);
+//                                JSONObject jsonObject = new JSONObject();
+//                                jsonObject.put("status", 1);
+//                                jsonObject.put("data", jsonArray);
+//
+//                                session.setLatestMessage(jsonObject.toString());
+//                                break;
+//                            }
+//                        }
+//                    }
+//
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                // The following can be used to open an Activity of your choice.
+//                Intent intent = new Intent(getApplicationContext(), MessageDetailActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                intent.putExtra(Constants.ID, msgID);
+//                intent.putExtra(Constants.TYPE, "notification");
+//                startActivity(intent);
+//
+//            } else {
+//                Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+//            }
+//
+//        }
+//    }
 
     OSNotificationPayload osNotificationPayload;
     private class CustomNotificationReceivedHandler implements OneSignal.NotificationReceivedHandler {
@@ -209,8 +284,6 @@ public class OptionMoneyMaker extends Application {
                         if (!isAppIsInBackground(getApplicationContext())) {
 
                             Log.v("ajtrial","app is in foreground");
-
-
                             showNewMessageArrived();
 
                         } else {
@@ -233,15 +306,12 @@ public class OptionMoneyMaker extends Application {
         ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
     }
 
-
-
-
     public void showNewMessageArrived() {
+
         Log.v("ajtrial","at 254 in app class shownewmessage arrived hit");
         //this executes when notification is received ( worked : fg only )
         DeliveryInterface deliveryInterface = (DeliveryInterface) OptionMoneyMaker.getHomeFragmentContext();
         deliveryInterface.getUpdatedPayload(osNotificationPayload);
-
 
     }
 

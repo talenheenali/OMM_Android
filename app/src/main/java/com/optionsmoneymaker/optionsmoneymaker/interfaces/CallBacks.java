@@ -1,4 +1,4 @@
-package com.optionsmoneymaker.optionsmoneymaker;
+package com.optionsmoneymaker.optionsmoneymaker.interfaces;
 
 public interface CallBacks {
 

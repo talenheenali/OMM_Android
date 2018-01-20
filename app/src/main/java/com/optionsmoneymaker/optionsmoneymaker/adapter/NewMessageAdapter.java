@@ -19,6 +19,7 @@ import com.optionsmoneymaker.optionsmoneymaker.MessageDetailActivity;
 import com.optionsmoneymaker.optionsmoneymaker.R;
 import com.optionsmoneymaker.optionsmoneymaker.fragment.MessageActionDialogFragment;
 import com.optionsmoneymaker.optionsmoneymaker.model.MessageData;
+import com.optionsmoneymaker.optionsmoneymaker.sqlitedb.DatabaseHandler;
 import com.optionsmoneymaker.optionsmoneymaker.utils.Constants;
 import com.optionsmoneymaker.optionsmoneymaker.utils.SessionManager;
 
@@ -38,7 +39,6 @@ import butterknife.ButterKnife;
 public class NewMessageAdapter extends RecyclerView.Adapter<NewMessageAdapter.ViewHolder> {
 
     private Context context;
-    private LayoutInflater inflater;
     private ArrayList<MessageData> msgList;
 
     public NewMessageAdapter(Context context, ArrayList<MessageData> list) {
@@ -59,10 +59,11 @@ public class NewMessageAdapter extends RecyclerView.Adapter<NewMessageAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
 
         holder.txtProName.setText(msgList.get(position).getProductName());
         holder.txtMessage.setText(Html.fromHtml(msgList.get(position).getTitle()));
+        holder.txtDate.setText(msgList.get(position).getDateTime());
 
         if (msgList.get(position).getIsRead().equalsIgnoreCase("1")) {
 
@@ -87,32 +88,22 @@ public class NewMessageAdapter extends RecyclerView.Adapter<NewMessageAdapter.Vi
         holder.itemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    msgList.get(position).setIsRead("1");
-                    msgList.get(position).setIsRead("1");
-                    // create a new Gson instance
-                    Gson gson = new Gson();
-                    // convert your list to json
-                    String jsonMsgList = gson.toJson(msgList);
-                    JSONArray jsonArray = new JSONArray(jsonMsgList);
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("status", 1);
-                    jsonObject.put("data", jsonArray);
 
-                    SessionManager session = new SessionManager(context);
-                    session.setLatestMessage(jsonObject.toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                MessageData dataToUpdate = msgList.get(holder.getAdapterPosition());
+                dataToUpdate.setIsRead("1");
+
+                new DatabaseHandler().updateNotif(dataToUpdate);
+                notifyItemChanged(holder.getAdapterPosition());
 
                 Intent intent = new Intent(context, MessageDetailActivity.class);
                 intent.putExtra(Constants.TYPE, "list");
-                intent.putExtra(Constants.ID, msgList.get(position).getId());
-                intent.putExtra(Constants.MESSAGE, msgList.get(position).getMessage());
-                intent.putExtra(Constants.PRODUCT, msgList.get(position).getProductName());
-                intent.putExtra(Constants.DATE, msgList.get(position).getDateTime());
-                intent.putExtra(Constants.TITLE, msgList.get(position).getTitle());
+                intent.putExtra(Constants.ID, msgList.get(holder.getAdapterPosition()).getId());
+                intent.putExtra(Constants.MESSAGE, msgList.get(holder.getAdapterPosition()).getMessage());
+                intent.putExtra(Constants.PRODUCT, msgList.get(holder.getAdapterPosition()).getProductName());
+                intent.putExtra(Constants.DATE, msgList.get(holder.getAdapterPosition()).getDateTime());
+                intent.putExtra(Constants.TITLE, msgList.get(holder.getAdapterPosition()).getTitle());
                 context.startActivity(intent);
+
             }
         });
 
@@ -120,17 +111,18 @@ public class NewMessageAdapter extends RecyclerView.Adapter<NewMessageAdapter.Vi
             @Override
             public boolean onLongClick(View view) {
 
-                if(msgList.get(position).getIsRead().equals("1")){
+                if(msgList.get(holder.getAdapterPosition()).getIsRead().equals("1")){
 
                         //this means it is readed
                 }else{
+
                     //this means not readed
                 }
 
-                Log.d(MessageAdapter.class.getSimpleName(), "onLongClick: " + position);
+                Log.d(MessageAdapter.class.getSimpleName(), "onLongClick: " + holder.getAdapterPosition());
                 MessageActionDialogFragment newFragment =
-                        MessageActionDialogFragment.newInstance(msgList.get(position).getId(),
-                                msgList.get(position).getIsRead() );
+                        MessageActionDialogFragment.newInstance(msgList.get(holder.getAdapterPosition()).getId(),
+                                msgList.get(holder.getAdapterPosition()).getIsRead() );
 
                 FragmentManager manager = ((Activity) context).getFragmentManager();
                 newFragment.show(manager, "MessageAction");
