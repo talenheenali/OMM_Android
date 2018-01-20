@@ -64,6 +64,7 @@ public class NewMessageAdapter extends RecyclerView.Adapter<NewMessageAdapter.Vi
         holder.txtProName.setText(msgList.get(position).getProductName());
         holder.txtMessage.setText(Html.fromHtml(msgList.get(position).getTitle()));
         holder.txtDate.setText(msgList.get(position).getDateTime());
+        holder.txtProName.setText(msgList.get(position).getProductName());
 
         if (msgList.get(position).getIsRead().equalsIgnoreCase("1")) {
 

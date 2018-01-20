@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -37,7 +38,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 
@@ -218,43 +221,63 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
         try {
 
             JSONObject jsonObject = notificationPayload.toJSONObject();
+            String body = jsonObject.optString("body");
+            String title = jsonObject.optString("title");
 
-            String title = jsonObject.getString("title");
-            String body = jsonObject.getString("body");
-            String id = jsonObject.getString("notificationID");
+            Log.v("jsondata", "body - " + body);
+            Log.v("jsondata", "title - " + title);
+
+            if (body.equals("") || body.isEmpty()) {
+                body = " -- ";
+            }
+
+            if (title.equals("") || title.isEmpty()) {
+                title = " -- ";
+            }
+
+            JSONObject jsonObject1 = jsonObject.getJSONObject("additionalData");
+            int id = jsonObject1.getInt("message_id");
 
             MessageData data = new MessageData();
-            data.setId(id);
+            data.setId(String.valueOf(id));
             data.setTitle(title);
             data.setMessage(body);
-            long d = new Date().getTime();
-            data.setDateTime(String.valueOf(d));
+
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String formattedDate = df.format(c.getTime());
+
+            data.setDateTime(formattedDate);
             messageAdapter.addNewItemToList(data);
 
             new DatabaseHandler().storeNewNotif(data);
             Log.v("ajtrial", "at 226 in home frag add new item complete hit");
 
             recyclerView.smoothScrollToPosition(0);
+
+            LayoutInflater inflater = this.getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.new_message_dialog, null);
+
             AlertDialog.Builder builder;
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Dialog_Alert);
+                builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_DeviceDefault_Dialog_NoActionBar);
             } else {
                 builder = new AlertDialog.Builder(getActivity());
             }
-            builder.setTitle("New Message")
-                    .setMessage(R.string.arrived_msg)
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // continue with delete
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // do nothing
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
+
+            builder.setView(dialogView);
+            final AlertDialog alertDialog = builder.create();
+
+            Button btn = dialogView.findViewById(R.id.btnOk);
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    alertDialog.dismiss();
+                }
+            });
+
+            alertDialog.show();
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -269,8 +292,8 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
         Log.v("callback", "received " + str);
         if (str.equals("Delete")) {
 
-            for(int i = 0 ; i < list.size() ; i++){
-                if(list.get(i).getId().equals(msgId)){
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).getId().equals(msgId)) {
                     list.remove(i);
                     messageAdapter.notifyItemRemoved(i);
                     new DatabaseHandler().deleteNotif(Integer.parseInt(msgId));
