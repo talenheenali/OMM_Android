@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.multidex.MultiDex;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -53,6 +54,7 @@ public class OptionMoneyMaker extends Application {
 
     private static MainActivity mainActivityContext;
     private static HomeFragment homeFragmentContext;
+    private static OptionMoneyMaker mInstance;
 
     public static MainActivity getMainActivityContext() {
         return mainActivityContext;
@@ -78,6 +80,8 @@ public class OptionMoneyMaker extends Application {
     public void onCreate() {
         super.onCreate();
 
+        mInstance = this;
+
         cd = new ConnectionDetector(getApplicationContext());
         session = new SessionManager(getApplicationContext());
 
@@ -100,6 +104,19 @@ public class OptionMoneyMaker extends Application {
             }
         });*/
     }
+
+    @Override
+    protected void attachBaseContext(Context base)
+    {
+        super.attachBaseContext(base);
+        //  ACRA.init(this);
+        MultiDex.install(OptionMoneyMaker.this);
+    }
+
+    public static synchronized OptionMoneyMaker getInstance() {
+        return mInstance;
+    }
+
 
     private class ExampleNotificationOpenedHandler implements OneSignal.NotificationOpenedHandler {
         // This fires when a notification is opened by tapping on it.

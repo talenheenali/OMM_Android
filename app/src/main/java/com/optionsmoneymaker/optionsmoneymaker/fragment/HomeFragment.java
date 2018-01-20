@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.onesignal.OSNotification;
 import com.onesignal.OSNotificationPayload;
@@ -23,11 +24,13 @@ import com.optionsmoneymaker.optionsmoneymaker.OptionMoneyMaker;
 import com.optionsmoneymaker.optionsmoneymaker.R;
 import com.optionsmoneymaker.optionsmoneymaker.adapter.MessageAdapter;
 import com.optionsmoneymaker.optionsmoneymaker.adapter.NewMessageAdapter;
+import com.optionsmoneymaker.optionsmoneymaker.interfaces.ListLoaderCallbacks;
 import com.optionsmoneymaker.optionsmoneymaker.model.MessageData;
 import com.optionsmoneymaker.optionsmoneymaker.model.MessageEvent;
 import com.optionsmoneymaker.optionsmoneymaker.pulltorefresh.PullToRefreshBase;
 import com.optionsmoneymaker.optionsmoneymaker.pulltorefresh.PullToRefreshView;
 import com.optionsmoneymaker.optionsmoneymaker.rest.RestClient;
+import com.optionsmoneymaker.optionsmoneymaker.sqlitedb.DatabaseHandler;
 import com.optionsmoneymaker.optionsmoneymaker.utils.Constants;
 import com.optionsmoneymaker.optionsmoneymaker.utils.DeliveryInterface;
 import com.optionsmoneymaker.optionsmoneymaker.utils.SessionManager;
@@ -51,11 +54,13 @@ import retrofit.mime.TypedByteArray;
  */
 public class HomeFragment extends BaseFragment implements DeliveryInterface , CallBacks {
 
+    ProgressBar progressBar;
     RecyclerView recyclerView;
     OneSignal.NotificationReceivedHandler handler;
     public static boolean active = false;
     NewMessageAdapter messageAdapter;
     ArrayList<MessageData> list;
+    RecyclerView.LayoutManager mLayoutManager;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -68,7 +73,6 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface , Ca
         OptionMoneyMaker.setHomeFragmentContext(HomeFragment.this);
         Log.v("ajtrial","at 65 in homefrag onCreate hit");
 
-
     }
 
     @Override
@@ -78,29 +82,35 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface , Ca
         ButterKnife.bind(this, rootView);
         Log.v("ajtrial","at 75 in homefrag onCreateView hit");
         recyclerView = rootView.findViewById(R.id.recyclerView);
-         // Inflate the layout for this fragment
+        progressBar = rootView.findViewById(R.id.progressBar);
+
+        // Inflate the layout for this fragment
         return rootView;
+
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        progressBar = new ProgressBar(getActivity());
+        progressBar.setVisibility(View.VISIBLE);
+
         list = new ArrayList<MessageData>();
         SessionManager session = new SessionManager(getActivity());
 
-        list = session.getLatestMessage().getData();
-
+       // list = session.getLatestMessage().getData();
+        progressBar.setVisibility(View.VISIBLE);
+        list = new DatabaseHandler().getAllNotifs();
         messageAdapter = new NewMessageAdapter(getActivity(),list);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(messageAdapter);
-        Log.v("ajtrial","at 96 in homefrag onActivityCreated hit");
-
-
+        progressBar.setVisibility(View.GONE);
 
     }
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -146,11 +156,14 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface , Ca
 
         } else {
 
-            list = new ArrayList<MessageData>();
-            list = session.getLatestMessage().getData();
-            messageAdapter = new NewMessageAdapter(getActivity(), list);
+            progressBar.setVisibility(View.VISIBLE);
+            list = new DatabaseHandler().getAllNotifs();
+            messageAdapter = new NewMessageAdapter(getActivity(),list);
+            mLayoutManager = new LinearLayoutManager(getActivity());
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
             recyclerView.setAdapter(messageAdapter);
-
+            progressBar.setVisibility(View.GONE);
 
 
         }
@@ -240,6 +253,8 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface , Ca
             }
 
     }
+
+
 }
 
 
