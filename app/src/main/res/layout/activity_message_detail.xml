@@ -6,7 +6,6 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/container_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -49,14 +48,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/txt_date"
-            android:layout_marginTop="5dp"
             android:layout_marginBottom="3dp"
+            android:layout_marginTop="5dp"
             android:ellipsize="end"
             android:maxLines="3"
-            android:textStyle="bold"
             android:text=""
             android:textColor="@color/black_font"
-            android:textSize="@dimen/text_font" />
+            android:textSize="@dimen/text_font"
+            android:textStyle="bold" />
 
         <WebView
             android:id="@+id/webview"

@@ -14,9 +14,9 @@
         android:layout_width="match_parent"
         android:layout_height="25dp"
         android:layout_above="@+id/ll_login"
-        android:background="@color/app_bg"
         android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp" />
+        android:layout_marginRight="20dp"
+        android:background="@color/app_bg" />
 
     <ImageView
         android:layout_width="wrap_content"
@@ -104,7 +104,6 @@
         android:visibility="gone">
 
         <ProgressBar
-            android:id="@+id/progressBar_login"
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

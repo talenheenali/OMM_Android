@@ -1,11 +1,8 @@
 package com.optionsmoneymaker.optionsmoneymaker.fragment;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,20 +15,17 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.onesignal.OSNotification;
 import com.onesignal.OSNotificationPayload;
 import com.onesignal.OneSignal;
-import com.optionsmoneymaker.optionsmoneymaker.adapter.MessageAdapter;
-import com.optionsmoneymaker.optionsmoneymaker.interfaces.CallBacks;
 import com.optionsmoneymaker.optionsmoneymaker.OptionMoneyMaker;
 import com.optionsmoneymaker.optionsmoneymaker.R;
 import com.optionsmoneymaker.optionsmoneymaker.adapter.NewMessageAdapter;
+import com.optionsmoneymaker.optionsmoneymaker.interfaces.CallBacks;
 import com.optionsmoneymaker.optionsmoneymaker.model.MessageData;
 import com.optionsmoneymaker.optionsmoneymaker.model.MessageEvent;
 import com.optionsmoneymaker.optionsmoneymaker.rest.RestClient;
 import com.optionsmoneymaker.optionsmoneymaker.sqlitedb.DatabaseHandler;
 import com.optionsmoneymaker.optionsmoneymaker.utils.DeliveryInterface;
-import com.optionsmoneymaker.optionsmoneymaker.utils.SessionManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -42,7 +36,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 
 import butterknife.ButterKnife;
 import retrofit.Callback;
@@ -55,10 +48,10 @@ import retrofit.mime.TypedByteArray;
  */
 public class HomeFragment extends BaseFragment implements DeliveryInterface, CallBacks {
 
+    public static boolean active = false;
     ProgressBar progressBar;
     RecyclerView recyclerView;
     OneSignal.NotificationReceivedHandler handler;
-    public static boolean active = false;
     NewMessageAdapter messageAdapter;
     ArrayList<MessageData> list;
     RecyclerView.LayoutManager mLayoutManager;
@@ -120,7 +113,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
                     try {
                         JSONObject main = new JSONObject(new String(((TypedByteArray) response.getBody()).getBytes()));
 
-                        if ((int) main.getInt("status") == 1) {
+                        if (main.getInt("status") == 1) {
 
                             session.setFirstTime(false);
 
@@ -135,7 +128,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
                             recyclerView.setAdapter(messageAdapter);
                             //  progressBar.setVisibility(View.GONE);
 
-                        } else if ((int) main.getInt("status") == 0) {
+                        } else if (main.getInt("status") == 0) {
                             Toast.makeText(getActivity(), "No Data Found.", Toast.LENGTH_SHORT).show();
                         }
 
