@@ -15,9 +15,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.optionsmoneymaker.optionsmoneymaker.interfaces.CallBacks;
 import com.optionsmoneymaker.optionsmoneymaker.OptionMoneyMaker;
 import com.optionsmoneymaker.optionsmoneymaker.R;
+import com.optionsmoneymaker.optionsmoneymaker.interfaces.CallBacks;
 import com.optionsmoneymaker.optionsmoneymaker.model.MessageEvent;
 import com.optionsmoneymaker.optionsmoneymaker.model.NotificationResult;
 import com.optionsmoneymaker.optionsmoneymaker.rest.RestClient;
@@ -41,8 +41,8 @@ import retrofit.client.Response;
 
 public class MessageActionDialogFragment extends DialogFragment {
 
-    CallBacks callBacks;
     protected ConnectionDetector cd;
+    CallBacks callBacks;
     private String isRead;
     private String messageId;
     private SessionManager session;
@@ -73,7 +73,7 @@ public class MessageActionDialogFragment extends DialogFragment {
 
         hideKeyboard();
 
-        callBacks = (CallBacks) OptionMoneyMaker.getHomeFragmentContext();
+        callBacks = OptionMoneyMaker.getHomeFragmentContext();
 
     }
 
@@ -94,7 +94,7 @@ public class MessageActionDialogFragment extends DialogFragment {
             getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         }
 
-        TextView textviewMessageReadUnread = (TextView) dialog.findViewById(R.id.textviewMessageReadUnread);
+        TextView textviewMessageReadUnread = dialog.findViewById(R.id.textviewMessageReadUnread);
         String callForMessage = "";
 
         if (isRead.equals("1")) {
@@ -105,7 +105,7 @@ public class MessageActionDialogFragment extends DialogFragment {
             textviewMessageReadUnread.setText("Mark as Read");
         }
 
-        TextView textviewMessageDelete = (TextView) dialog.findViewById(R.id.textviewMessageDelete);
+        TextView textviewMessageDelete = dialog.findViewById(R.id.textviewMessageDelete);
 
         final String finalCallForMessage = callForMessage;
         textviewMessageReadUnread.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +148,7 @@ public class MessageActionDialogFragment extends DialogFragment {
             }
         });
 
-        Button buttonCancel = (Button) dialog.findViewById(R.id.buttonCancel);
+        Button buttonCancel = dialog.findViewById(R.id.buttonCancel);
         buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

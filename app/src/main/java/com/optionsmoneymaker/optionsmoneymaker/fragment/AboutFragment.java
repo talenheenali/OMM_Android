@@ -5,17 +5,14 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.optionsmoneymaker.optionsmoneymaker.MainActivity;
 import com.optionsmoneymaker.optionsmoneymaker.R;
 import com.optionsmoneymaker.optionsmoneymaker.model.About;
-import com.optionsmoneymaker.optionsmoneymaker.model.SuccessResult;
 import com.optionsmoneymaker.optionsmoneymaker.rest.RestClient;
 
 import butterknife.BindView;
@@ -87,9 +84,9 @@ public class AboutFragment extends BaseFragment {
             @Override
             public void success(About result, Response response) {
                 dismiss();
-                if ((int)result.getStatus() == 1){
+                if (result.getStatus() == 1) {
                     tvAbout.setText(result.getData());
-                }else if ((int)result.getStatus() == 0){
+                } else if (result.getStatus() == 0) {
                     toast(result.getData());
                 }
             }

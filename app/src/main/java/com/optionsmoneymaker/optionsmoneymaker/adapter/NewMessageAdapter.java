@@ -7,25 +7,18 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.optionsmoneymaker.optionsmoneymaker.MessageDetailActivity;
 import com.optionsmoneymaker.optionsmoneymaker.R;
 import com.optionsmoneymaker.optionsmoneymaker.fragment.MessageActionDialogFragment;
 import com.optionsmoneymaker.optionsmoneymaker.model.MessageData;
 import com.optionsmoneymaker.optionsmoneymaker.sqlitedb.DatabaseHandler;
 import com.optionsmoneymaker.optionsmoneymaker.utils.Constants;
-import com.optionsmoneymaker.optionsmoneymaker.utils.SessionManager;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -120,7 +113,6 @@ public class NewMessageAdapter extends RecyclerView.Adapter<NewMessageAdapter.Vi
                     //this means not readed
                 }
 
-                Log.d(MessageAdapter.class.getSimpleName(), "onLongClick: " + holder.getAdapterPosition());
                 MessageActionDialogFragment newFragment =
                         MessageActionDialogFragment.newInstance(msgList.get(holder.getAdapterPosition()).getId(),
                                 msgList.get(holder.getAdapterPosition()).getIsRead() );
@@ -135,6 +127,13 @@ public class NewMessageAdapter extends RecyclerView.Adapter<NewMessageAdapter.Vi
     @Override
     public int getItemCount() {
         return msgList.size();
+    }
+
+    public void addNewItemToList(MessageData newMessageDataItem) {
+
+        msgList.add(0, newMessageDataItem);
+        notifyItemInserted(0);
+
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -152,13 +151,6 @@ public class NewMessageAdapter extends RecyclerView.Adapter<NewMessageAdapter.Vi
             ButterKnife.bind(this, itemView);
             itemLayout = itemView.findViewById(R.id.rowItem);
         }
-    }
-
-    public void addNewItemToList(MessageData newMessageDataItem){
-
-        msgList.add(0,newMessageDataItem);
-        notifyItemInserted(0);
-
     }
 
 }

@@ -3,7 +3,6 @@ package com.optionsmoneymaker.optionsmoneymaker.fragment;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,17 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.optionsmoneymaker.optionsmoneymaker.R;
-import com.optionsmoneymaker.optionsmoneymaker.model.About;
 import com.optionsmoneymaker.optionsmoneymaker.model.ContactUS;
 import com.optionsmoneymaker.optionsmoneymaker.rest.RestClient;
 import com.optionsmoneymaker.optionsmoneymaker.utils.UIUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -93,10 +89,10 @@ public class HelpFragment extends BaseFragment {
             @Override
             public void success(ContactUS result, Response response) {
                 dismiss();
-                if ((int) result.getStatus() == 1) {
+                if (result.getStatus() == 1) {
                     tvWeb.setText(Html.fromHtml("<u>" + result.getData().getWebsite() + "</u>"));
                     strEmail = result.getData().getEmail();
-                } else if ((int) result.getStatus() == 0) {
+                } else if (result.getStatus() == 0) {
                     toast("No Data Found");
                 }
             }

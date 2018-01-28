@@ -3,7 +3,6 @@ package com.optionsmoneymaker.optionsmoneymaker.adapter;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +21,9 @@ import java.util.List;
 public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDrawerAdapter.MyViewHolder> {
 
     List<NavDrawerItem> data = Collections.emptyList();
+    TypedArray icons;
     private LayoutInflater inflater;
     private Context context;
-    TypedArray icons;
 
     public NavigationDrawerAdapter(Context context, List<NavDrawerItem> data) {
         this.context = context;
@@ -63,8 +62,8 @@ public class NavigationDrawerAdapter extends RecyclerView.Adapter<NavigationDraw
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.title);
-            ivIcon = (ImageView) itemView.findViewById(R.id.iv_icon);
+            title = itemView.findViewById(R.id.title);
+            ivIcon = itemView.findViewById(R.id.iv_icon);
         }
     }
 }

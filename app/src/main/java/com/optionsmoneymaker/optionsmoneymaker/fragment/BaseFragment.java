@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.optionsmoneymaker.optionsmoneymaker.R;
-import com.optionsmoneymaker.optionsmoneymaker.rest.RestClient;
 import com.optionsmoneymaker.optionsmoneymaker.utils.ConnectionDetector;
 import com.optionsmoneymaker.optionsmoneymaker.utils.SessionManager;
 

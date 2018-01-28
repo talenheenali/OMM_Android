@@ -3,7 +3,6 @@ package com.optionsmoneymaker.optionsmoneymaker.fragment;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -14,16 +13,10 @@ import android.view.Window;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.onesignal.OSNotificationAction;
-import com.optionsmoneymaker.optionsmoneymaker.MessageDetailActivity;
 import com.optionsmoneymaker.optionsmoneymaker.R;
 import com.optionsmoneymaker.optionsmoneymaker.model.NotificationResult;
 import com.optionsmoneymaker.optionsmoneymaker.rest.RestClient;
-import com.optionsmoneymaker.optionsmoneymaker.utils.Constants;
-
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -112,8 +105,8 @@ public class SettingFragment extends BaseFragment{
         dialog.setContentView(R.layout.dialog_font_size);
         dialog.setCancelable(false);
 
-        final TextView tvFontSize = (TextView) dialog.findViewById(R.id.tv_font_size);
-        final SeekBar seekBar = (SeekBar) dialog.findViewById(R.id.seekBar1);
+        final TextView tvFontSize = dialog.findViewById(R.id.tv_font_size);
+        final SeekBar seekBar = dialog.findViewById(R.id.seekBar1);
 
         final int[] tmpIndex = new int[1];
         tvFontSize.setText((fontIndex * 10 + 50) + "%");
@@ -193,10 +186,10 @@ public class SettingFragment extends BaseFragment{
                                     strID, new Callback<NotificationResult>() {
                                         @Override
                                         public void success(NotificationResult result, Response response) {
-                                            if ((int) result.getStatus() == 1) {
+                                            if (result.getStatus() == 1) {
                                                 session.setNotiIndex(p);
                                                 tvNotiText.setText(notiArray.get(p));
-                                            } else if ((int) result.getStatus() == 0) {
+                                            } else if (result.getStatus() == 0) {
                                                 toast("Something went wrong please try again later");
                                             }
                                             dismiss();
