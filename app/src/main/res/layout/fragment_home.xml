@@ -1,27 +1,19 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center"
     android:background="@color/app_bg"
-    android:gravity="center"
+    android:orientation="vertical"
     tools:context="com.optionsmoneymaker.optionsmoneymaker.fragment.HomeFragment">
 
-    <ProgressBar
-
-        android:id="@+id/progressBar"
-        style="@style/Widget.AppCompat.Spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
-
-    <android.support.v7.widget.RecyclerView
-
-        android:id="@+id/recyclerView"
+    <com.optionsmoneymaker.optionsmoneymaker.pulltorefresh.PullToRefreshView
+        android:id="@+id/list_message"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbarStyle="insideInset"
-        android:scrollbars="vertical" />
+        android:layout_margin="5dp"
+        android:background="@color/app_bg"
+        android:divider="@color/app_bg"
+        android:dividerHeight="2dp"
+        android:scrollbars="none" />
 
-
-</RelativeLayout>
+</LinearLayout>

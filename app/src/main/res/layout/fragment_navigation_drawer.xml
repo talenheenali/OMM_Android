@@ -12,16 +12,16 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
             android:layout_above="@+id/iv_line"
+            android:layout_alignParentTop="true"
             android:background="@drawable/drawer_bg" />
 
         <ImageView
             android:id="@+id/iv_user_pic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:scaleType="fitCenter"
             android:layout_margin="20dp"
+            android:scaleType="fitCenter"
             android:src="@drawable/user_profile" />
 
         <TextView
@@ -41,9 +41,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tv_username"
+            android:layout_marginBottom="10dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:layout_marginBottom="10dp"
             android:text="Email"
             android:textColor="@color/white_font"
             android:textSize="@dimen/small_font" />

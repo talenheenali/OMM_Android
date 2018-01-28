@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/btn_light_grey"
-    android:id="@+id/rowItem"
     android:padding="10dp">
 
     <TextView
@@ -11,8 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:text="date"
         android:singleLine="true"
+        android:text="date"
         android:textColor="@color/app_date_color"
         android:textSize="@dimen/text_font" />
 
