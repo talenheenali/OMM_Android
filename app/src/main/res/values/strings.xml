@@ -50,4 +50,7 @@
         <item>Every 30 minutes</item>
         <item>Every 1 hour</item>
     </string-array>
+
+    <string name="test">test</string>
+    
 </resources>
