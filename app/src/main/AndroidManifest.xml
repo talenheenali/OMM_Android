@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.optionsmoneymaker.optionsmoneymaker">
+    package="com.optionsmoneymaker.optionsmoneymakerbeta">
 
     <uses-permission android:name="android.permission.GET_TASKS" />
 
@@ -43,8 +43,8 @@
 
         <service
             android:name=".NotificationExtender"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="false">
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE">
             <intent-filter>
                 <action android:name="com.onesignal.NotificationExtender" />
             </intent-filter>

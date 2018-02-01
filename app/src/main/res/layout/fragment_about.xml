@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/app_bg"
     android:orientation="vertical"
-    tools:context="com.optionsmoneymaker.optionsmoneymaker.fragment.AboutFragment">
+    tools:context="com.optionsmoneymaker.optionsmoneymakerbeta.fragment.AboutFragment">
 
     <ScrollView
         android:layout_width="match_parent"

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/app_bg"
     android:orientation="vertical"
-    tools:context="com.optionsmoneymaker.optionsmoneymaker.fragment.SettingFragment">
+    tools:context="com.optionsmoneymaker.optionsmoneymakerbeta.fragment.SettingFragment">
 
     <RelativeLayout
         android:id="@+id/rl_notification"
