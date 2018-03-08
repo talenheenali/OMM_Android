@@ -100,7 +100,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
                     messageDataModel = new MessageData();
                     messageDataModel.setId((cursor.getString(0)));
-                    Log.v("dbdemo","fetching - "+(cursor.getInt(0)));
+                    //      Log.v("dbdemo","fetching - "+(cursor.getInt(0)));
                     messageDataModel.setTitle((cursor.getString(1)));
                     messageDataModel.setProductName((cursor.getString(2)));
                     messageDataModel.setDateTime((cursor.getString(3)));

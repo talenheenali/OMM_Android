@@ -153,4 +153,5 @@ public class NewMessageAdapter extends RecyclerView.Adapter<NewMessageAdapter.Vi
         }
     }
 
+
 }

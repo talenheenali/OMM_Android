@@ -179,7 +179,7 @@ public class OptionMoneyMaker extends Application {
                 if (actionType == OSNotificationAction.ActionType.ActionTaken)
                     Log.v("Notifnew", "Button pressed with id: " + result.action.actionID);
 
-                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
                 String strTime = dateFormatter.format(new Date());
 
                 RestClient.getMoneyMaker().messageRead(msgID, session.getUserID(),

@@ -1,6 +1,9 @@
 package com.optionsmoneymaker.optionsmoneymakerbeta.fragment;
 
 import android.app.Activity;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -32,10 +35,12 @@ import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 
 import butterknife.ButterKnife;
 import retrofit.Callback;
@@ -213,6 +218,10 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
 
         try {
 
+            Uri notification = RingtoneManager.getActualDefaultRingtoneUri(OptionMoneyMaker.getInstance(), RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(OptionMoneyMaker.getInstance(), notification);
+            r.play();
+
             JSONObject jsonObject = notificationPayload.toJSONObject();
             String body = jsonObject.optString("body");
             String title = jsonObject.optString("title");
@@ -235,6 +244,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
             data.setId(String.valueOf(id));
             data.setTitle(title);
             data.setMessage(body);
+            data.setDateTime(getCurrentDateAndTime());
 
             Calendar c = Calendar.getInstance();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -266,11 +276,15 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    alertDialog.dismiss();
+                    alertDialog.cancel();
                 }
             });
 
             alertDialog.show();
+
+            if (!r.isPlaying()) {
+                r.play();
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -278,6 +292,11 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
 
     }
 
+    public String getCurrentDateAndTime() {
+
+        return DateFormat.getDateTimeInstance().format(new Date());
+
+    }
 
     @Override
     public void callback(String msgId, String str) {
