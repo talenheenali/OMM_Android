@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,10 +40,9 @@ public class SettingFragment extends BaseFragment{
     TextView tvFontText;
     @BindView(R.id.tv_notification_text)
     TextView tvNotiText;
-
+    String formattedDate;
     private Dialog dialog;
     private int fontIndex;
-
     private ArrayList<String> notiArray = new ArrayList<>();
 
     public SettingFragment() {
@@ -52,6 +52,24 @@ public class SettingFragment extends BaseFragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+    }
+
+    public String convertTimeToLocal(String timeString) {
+
+        try {
+
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = df.parse(timeString);
+            df.setTimeZone(TimeZone.getDefault());
+            formattedDate = df.format(date);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return formattedDate;
 
     }
 
@@ -177,6 +195,8 @@ public class SettingFragment extends BaseFragment{
                             showProgressbar("Sync Schedule");
                             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
                             String strTime = dateFormatter.format(new Date());
+                            strTime = convertTimeToLocal(strTime);
+
                             ListView lw = ((AlertDialog) dialog).getListView();
                             final int p = lw.getCheckedItemPosition();
 

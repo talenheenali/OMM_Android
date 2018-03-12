@@ -13,7 +13,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
@@ -25,6 +29,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TABLE_NOTIFS_MASTER = "NOTIFS_MASTER";
     SQLiteDatabase sqLiteDatabase;
     Cursor cursor;
+    String formattedDate;
 
     public DatabaseHandler() {
 
@@ -58,7 +63,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-
     // insert new customer basic data
     public long storeNewNotif(MessageData messageDataModel) {
 
@@ -88,7 +92,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     }
 
-
     //insert customer fees and other details
     public ArrayList<MessageData> getAllNotifs() {
 
@@ -110,7 +113,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     //      Log.v("dbdemo","fetching - "+(cursor.getInt(0)));
                     messageDataModel.setTitle((cursor.getString(1)));
                     messageDataModel.setProductName((cursor.getString(2)));
-                    messageDataModel.setDateTime((cursor.getString(3)));
+                    String tempString = cursor.getString(3);
+                    tempString = convertTimeToLocal(tempString);
+                    messageDataModel.setDateTime(tempString);
                     messageDataModel.setMessage((cursor.getString(4)));
                     messageDataModel.setIsRead((cursor.getString(5)));
                     arrayList.add(messageDataModel);
@@ -125,6 +130,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
         return arrayList;
+
+    }
+
+    public String convertTimeToLocal(String timeString) {
+
+        try {
+
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = df.parse(timeString);
+            df.setTimeZone(TimeZone.getDefault());
+            formattedDate = df.format(date);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return formattedDate;
 
     }
 

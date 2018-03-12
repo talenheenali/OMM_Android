@@ -18,6 +18,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import butterknife.BindView;
 import retrofit.Callback;
@@ -41,6 +42,7 @@ public class MessageDetailActivity extends BaseActivity {
     TextView txtDate;
     @BindView(R.id.txt_message)
     TextView txtTitle;
+    String formattedDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,13 +73,18 @@ public class MessageDetailActivity extends BaseActivity {
             txtTitle.setText(getIntent().getStringExtra(Constants.TITLE));
 
             try {
+
                 SimpleDateFormat serverDateFormat = new SimpleDateFormat(Constants.SERVER_DATETIME_FORMAT, Locale.US);
                 SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATETIME_FORMAT, Locale.US);
                 //Converting the String back to java.util.Date
                 Date date = serverDateFormat.parse(getIntent().getStringExtra(Constants.DATE));
 
-                txtDate.setText(dateFormat.format(date));
-            } catch (ParseException e) {
+                Log.v("DateConvertIssue", "at 81 before date locale us " + serverDateFormat.format(date));
+                String dateNew = convertTimeToLocal(serverDateFormat.format(date));
+                Log.v("DateConvertIssue", "at 83 after date locale def " + dateNew);
+                txtDate.setText(dateFormat.format(dateNew));
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -86,6 +93,8 @@ public class MessageDetailActivity extends BaseActivity {
                 try {
                     SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
                     String strTime = dateFormatter.format(new Date());
+                    strTime = convertTimeToLocal(strTime);
+                    Log.v("DateConvertIssue", "at 95 before date locale def : " + strTime);
 
                     RestClient.getMoneyMaker().messageRead(getIntent().getStringExtra(Constants.ID), session.getUserID(),
                             strTime, new Callback<NotificationResult>() {
@@ -116,6 +125,24 @@ public class MessageDetailActivity extends BaseActivity {
         Log.v("current","in MessageDetailActivity");
     }
 
+    public String convertTimeToLocal(String timeString) {
+
+        try {
+
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = df.parse(timeString);
+            df.setTimeZone(TimeZone.getDefault());
+            formattedDate = df.format(date);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return formattedDate;
+
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -136,6 +163,7 @@ public class MessageDetailActivity extends BaseActivity {
         try {
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
             String strTime = dateFormatter.format(new Date());
+            strTime = convertTimeToLocal(strTime);
 
             RestClient.getMoneyMaker().messageDetail(id, strTime, session.getUserID(), new Callback<MessageDetail>() {
                 @Override
@@ -152,8 +180,10 @@ public class MessageDetailActivity extends BaseActivity {
                             SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATETIME_FORMAT, Locale.US);
                             //Converting the String back to java.util.Date
                             Date date = serverDateFormat.parse(result.getDateTime());
+                            String strTime = serverDateFormat.format(date);
+                            strTime = convertTimeToLocal(strTime);
+                            txtDate.setText(strTime);
 
-                            txtDate.setText(dateFormat.format(date));
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }

@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -49,6 +50,7 @@ public class OptionMoneyMaker extends Application {
     private static HomeFragment homeFragmentContext;
     private static OptionMoneyMaker mInstance;
     OSNotificationPayload osNotificationPayload;
+    String formattedDate;
     private ConnectionDetector cd;
     private SessionManager session;
     private int badgeCount = 0;
@@ -161,28 +163,49 @@ public class OptionMoneyMaker extends Application {
         this.mCurrentActivity = mCurrentActivity;
     }
 
+    public String convertTimeToLocal(String timeString) {
+
+        try {
+
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = df.parse(timeString);
+            df.setTimeZone(TimeZone.getDefault());
+            formattedDate = df.format(date);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return formattedDate;
+
+    }
+
     private class ExampleNotificationOpenedHandler implements OneSignal.NotificationOpenedHandler {
 
         @Override
         public void notificationOpened(OSNotificationOpenResult result) {
 
-            Log.v("Notifnew","notification opened "+result.notification.payload);
+            Log.v("Notifnew", "notification opened " + result.notification.payload.rawPayload);
 
             if (cd.isConnectingToInternet()) {
 
                 OSNotificationAction.ActionType actionType = result.action.type;
                 final JSONObject data = result.notification.payload.additionalData;
                 String msgID = "";
+                String dateTimeStr = " ";
 
                 if (data != null) {
                     msgID = data.optString("message_id", null);
+                    dateTimeStr = data.optString("sent_time", null);
                 }
 
                 if (actionType == OSNotificationAction.ActionType.ActionTaken)
                     Log.v("Notifnew", "Button pressed with id: " + result.action.actionID);
 
-                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
                 String strTime = dateFormatter.format(new Date());
+                strTime = convertTimeToLocal(strTime);
 
                 RestClient.getMoneyMaker().messageRead(msgID, session.getUserID(),
                         strTime, new Callback<NotificationResult>() {

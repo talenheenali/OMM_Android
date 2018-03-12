@@ -296,7 +296,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
 
         try {
 
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
             df.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date date = df.parse(timeString);
             df.setTimeZone(TimeZone.getDefault());
