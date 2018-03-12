@@ -36,7 +36,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        String CREATE_TABLE_NOTIFS_MASTER = "CREATE TABLE IF NOT EXISTS "+TABLE_NOTIFS_MASTER+" (" +
+        String CREATE_TABLE_NOTIFS_MASTER = "CREATE TABLE IF NOT EXISTS " + TABLE_NOTIFS_MASTER + " (" +
                 "  `NOTIF_ID` INTEGER PRIMARY KEY NOT NULL," +
                 "  `NOTIF_TITLE` TEXT NOT NULL," +
                 "  `NOTIF_PRODUCT_NAME` TEXT NOT NULL," +
@@ -62,19 +62,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // insert new customer basic data
     public long storeNewNotif(MessageData messageDataModel) {
 
-        sqLiteDatabase = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
+        long returnId = 0;
 
-        //  SimpleDateFormat sdf = new SimpleDateFormat(InfoResources.DateFormatForView);
-        values.put("NOTIF_ID", messageDataModel.getId());
-        values.put("NOTIF_TITLE", messageDataModel.getTitle());
-        values.put("NOTIF_PRODUCT_NAME",  messageDataModel.getProductName());
-        values.put("NOTIF_DATE_TIME", messageDataModel.getDateTime());
-        values.put("NOTIF_MESSAGE", messageDataModel.getMessage());
-        values.put("NOTIF_ISREAD", messageDataModel.getIsRead());
+        try {
+            sqLiteDatabase = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
 
-        long returnId = sqLiteDatabase.insert(TABLE_NOTIFS_MASTER, null, values);
-        Log.v("dbdemo", "newly inserted row id is = " + returnId + " , in table - " + TABLE_NOTIFS_MASTER);
+            //  SimpleDateFormat sdf = new SimpleDateFormat(InfoResources.DateFormatForView);
+            values.put("NOTIF_ID", messageDataModel.getId());
+            values.put("NOTIF_TITLE", messageDataModel.getTitle());
+            values.put("NOTIF_PRODUCT_NAME", messageDataModel.getProductName());
+            values.put("NOTIF_DATE_TIME", messageDataModel.getDateTime());
+            values.put("NOTIF_MESSAGE", messageDataModel.getMessage());
+            values.put("NOTIF_ISREAD", messageDataModel.getIsRead());
+
+            returnId = sqLiteDatabase.insert(TABLE_NOTIFS_MASTER, null, values);
+            Log.v("dbdemo", "newly inserted row id is = " + returnId + " , in table - " + TABLE_NOTIFS_MASTER);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         sqLiteDatabase.close(); // Closing database connection
         return returnId;
@@ -85,7 +92,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //insert customer fees and other details
     public ArrayList<MessageData> getAllNotifs() {
 
-        MessageData messageDataModel  ;
+        MessageData messageDataModel;
         ArrayList<MessageData> arrayList = new ArrayList<>();
 
         try {
@@ -121,7 +128,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     }
 
-    public void updateNotif(MessageData messageDataModel){
+    public void updateNotif(MessageData messageDataModel) {
 
         sqLiteDatabase = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -129,33 +136,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put("NOTIF_ISREAD", messageDataModel.getIsRead());
 
         // updating row
-        int res = sqLiteDatabase.update(TABLE_NOTIFS_MASTER, values, "NOTIF_ID" + " = " + messageDataModel.getId() , null);
-        Log.v("dbdemo","updation to notif master , result = "+res);
+        int res = sqLiteDatabase.update(TABLE_NOTIFS_MASTER, values, "NOTIF_ID" + " = " + messageDataModel.getId(), null);
+        Log.v("dbdemo", "updation to notif master , result = " + res);
 
         sqLiteDatabase.close();
 
     }
 
-    public void syncAndStoreIntoDb(ArrayList<MessageData> arrayList){
+    public void syncAndStoreIntoDb(ArrayList<MessageData> arrayList) {
 
         MessageData messageDataModel;
 
-           //collect the server response into arraylist
-             for(int i = 0 ; i < arrayList.size(); i++){
+        //collect the server response into arraylist
+        for (int i = 0; i < arrayList.size(); i++) {
 
-                messageDataModel = arrayList.get(i);
-                storeNewNotif(messageDataModel);
+            messageDataModel = arrayList.get(i);
+            storeNewNotif(messageDataModel);
 
-            }
+        }
 
     }
 
-    public void syncWithWeb(String rawJsonDataString){
+    public void syncWithWeb(String rawJsonDataString) {
 
-        MessageData messageDataModel  ;
+        MessageData messageDataModel;
         ArrayList<MessageData> arrayList = new ArrayList<>();
 
-        try{
+        try {
 
             //collect the server response into arraylist
 
@@ -164,7 +171,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
             JSONArray jsonArray = jsonObject.getJSONArray("data");
 
-            for(int i = 0 ; i < jsonArray.length(); i++){
+            for (int i = 0; i < jsonArray.length(); i++) {
 
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
                 messageDataModel = new MessageData();
@@ -179,7 +186,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             }
 
             //add data into db
-            for(int j = 0 ; j < arrayList.size() ; j++){
+            for (int j = 0; j < arrayList.size(); j++) {
                 storeNewNotif(arrayList.get(j));
             }
 
@@ -189,15 +196,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     }
 
-    public void deleteNotif(int notifId){
+    public void deleteNotif(int notifId) {
 
         SQLiteDatabase db = this.getWritableDatabase();
-        int res = db.delete(TABLE_NOTIFS_MASTER, "NOTIF_ID" + " = "+notifId  , null);
-        Log.v("deleteLog","delete return value from "+TABLE_NOTIFS_MASTER+" - "+res);
+        int res = db.delete(TABLE_NOTIFS_MASTER, "NOTIF_ID" + " = " + notifId, null);
+        Log.v("deleteLog", "delete return value from " + TABLE_NOTIFS_MASTER + " - " + res);
         db.close();
 
     }
-
 
 
 }

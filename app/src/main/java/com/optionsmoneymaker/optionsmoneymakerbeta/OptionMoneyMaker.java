@@ -138,8 +138,10 @@ public class OptionMoneyMaker extends Application {
     }
 
     private void showBadge() {
+
         badgeCount++;
         ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
+
     }
 
     public void showNewMessageArrived() {
@@ -228,8 +230,10 @@ public class OptionMoneyMaker extends Application {
             //this executes when notification is received ( wokred : bg and fg )
              osNotificationPayload = notification.payload;
              Log.v("ajtrial","at 185 notification received in App class "+osNotificationPayload.title);
+            Log.v("ajtrial", "at 185 notification received in App class " + osNotificationPayload.body);
 
-             new Handler(Looper.getMainLooper()).post(new Runnable() {
+
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
                     try {

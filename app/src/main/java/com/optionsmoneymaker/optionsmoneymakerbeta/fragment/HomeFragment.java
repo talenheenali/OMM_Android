@@ -38,9 +38,10 @@ import org.json.JSONObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import butterknife.ButterKnife;
 import retrofit.Callback;
@@ -60,6 +61,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
     NewMessageAdapter messageAdapter;
     ArrayList<MessageData> list;
     RecyclerView.LayoutManager mLayoutManager;
+    String formattedDate;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -105,7 +107,6 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
         reload();
 
     }
-
 
     public void reload() {
 
@@ -162,7 +163,6 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
         super.onDetach();
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -206,10 +206,8 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
             recyclerView.setAdapter(messageAdapter);
             progressBar.setVisibility(View.GONE);
 
-
         }
     }
-
 
     @Override
     public void getUpdatedPayload(OSNotificationPayload notificationPayload) {
@@ -239,18 +237,20 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
 
             JSONObject jsonObject1 = jsonObject.getJSONObject("additionalData");
             int id = jsonObject1.getInt("message_id");
+            String utcDate = jsonObject1.getString("sent_time");
+            String localTime = convertTimeToLocal(utcDate);
 
             MessageData data = new MessageData();
             data.setId(String.valueOf(id));
             data.setTitle(title);
             data.setMessage(body);
-            data.setDateTime(getCurrentDateAndTime());
+            data.setDateTime(localTime);
 
-            Calendar c = Calendar.getInstance();
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String formattedDate = df.format(c.getTime());
+//            Calendar c = Calendar.getInstance();
+//            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//            String formattedDate = df.format(c.getTime());
+            //data.setDateTime(formattedDate);
 
-            data.setDateTime(formattedDate);
             messageAdapter.addNewItemToList(data);
 
             new DatabaseHandler().storeNewNotif(data);
@@ -289,6 +289,24 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+    }
+
+    public String convertTimeToLocal(String timeString) {
+
+        try {
+
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = df.parse(timeString);
+            df.setTimeZone(TimeZone.getDefault());
+            formattedDate = df.format(date);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return formattedDate;
 
     }
 
