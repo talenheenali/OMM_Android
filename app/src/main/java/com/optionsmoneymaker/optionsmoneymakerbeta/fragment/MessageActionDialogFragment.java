@@ -30,7 +30,6 @@ import org.greenrobot.eventbus.EventBus;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -160,23 +159,23 @@ public class MessageActionDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    public String convertTimeToLocal(String timeString) {
-
-        try {
-
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-            Date date = df.parse(timeString);
-            df.setTimeZone(TimeZone.getDefault());
-            formattedDate = df.format(date);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return formattedDate;
-
-    }
+//    public String convertTimeToLocal(String timeString) {
+//
+//        try {
+//
+//            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+//            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+//            Date date = df.parse(timeString);
+//            df.setTimeZone(TimeZone.getDefault());
+//            formattedDate = df.format(date);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        return formattedDate;
+//
+//    }
 
     private void callToDeleteMessage(String messageId) {
         if (cd.isConnectingToInternet()) {
@@ -184,7 +183,7 @@ public class MessageActionDialogFragment extends DialogFragment {
             try {
                 SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
                 String strTime = dateFormatter.format(new Date());
-                strTime = convertTimeToLocal(strTime);
+                //   strTime = convertTimeToLocal(strTime);
 
                 RestClient.getMoneyMaker().messageDelete(messageId, session.getUserID(),
                         strTime, new Callback<NotificationResult>() {
@@ -215,7 +214,7 @@ public class MessageActionDialogFragment extends DialogFragment {
             try {
                 SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
                 String strTime = dateFormatter.format(new Date());
-                strTime = convertTimeToLocal(strTime);
+                //    strTime = convertTimeToLocal(strTime);
 
                 if (callForMessage.equals("message_read")) {
                     RestClient.getMoneyMaker().messageRead(messageId, session.getUserID(),

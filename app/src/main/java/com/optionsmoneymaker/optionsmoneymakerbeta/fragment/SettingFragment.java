@@ -22,7 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,23 +54,23 @@ public class SettingFragment extends BaseFragment{
 
     }
 
-    public String convertTimeToLocal(String timeString) {
-
-        try {
-
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-            Date date = df.parse(timeString);
-            df.setTimeZone(TimeZone.getDefault());
-            formattedDate = df.format(date);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return formattedDate;
-
-    }
+//    public String convertTimeToLocal(String timeString) {
+//
+//        try {
+//
+//            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+//            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+//            Date date = df.parse(timeString);
+//            df.setTimeZone(TimeZone.getDefault());
+//            formattedDate = df.format(date);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        return formattedDate;
+//
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -195,7 +194,7 @@ public class SettingFragment extends BaseFragment{
                             showProgressbar("Sync Schedule");
                             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
                             String strTime = dateFormatter.format(new Date());
-                            strTime = convertTimeToLocal(strTime);
+                            //   strTime = convertTimeToLocal(strTime);
 
                             ListView lw = ((AlertDialog) dialog).getListView();
                             final int p = lw.getCheckedItemPosition();

@@ -36,12 +36,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import butterknife.ButterKnife;
 import retrofit.Callback;
@@ -237,14 +234,12 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
 
             JSONObject jsonObject1 = jsonObject.getJSONObject("additionalData");
             int id = jsonObject1.getInt("message_id");
-            String utcDate = jsonObject1.getString("sent_time");
-            String localTime = convertTimeToLocal(utcDate);
 
             MessageData data = new MessageData();
             data.setId(String.valueOf(id));
             data.setTitle(title);
             data.setMessage(body);
-            data.setDateTime(localTime);
+            data.setDateTime(jsonObject1.getString("sent_time"));
 
 //            Calendar c = Calendar.getInstance();
 //            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -292,23 +287,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
 
     }
 
-    public String convertTimeToLocal(String timeString) {
 
-        try {
-
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-            Date date = df.parse(timeString);
-            df.setTimeZone(TimeZone.getDefault());
-            formattedDate = df.format(date);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return formattedDate;
-
-    }
 
     public String getCurrentDateAndTime() {
 

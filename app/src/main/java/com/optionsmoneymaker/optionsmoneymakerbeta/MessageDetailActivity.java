@@ -14,7 +14,6 @@ import com.optionsmoneymaker.optionsmoneymakerbeta.model.NotificationResult;
 import com.optionsmoneymaker.optionsmoneymakerbeta.rest.RestClient;
 import com.optionsmoneymaker.optionsmoneymakerbeta.utils.Constants;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -74,15 +73,9 @@ public class MessageDetailActivity extends BaseActivity {
 
             try {
 
-                SimpleDateFormat serverDateFormat = new SimpleDateFormat(Constants.SERVER_DATETIME_FORMAT, Locale.US);
-                SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATETIME_FORMAT, Locale.US);
-                //Converting the String back to java.util.Date
-                Date date = serverDateFormat.parse(getIntent().getStringExtra(Constants.DATE));
-
-                Log.v("DateConvertIssue", "at 81 before date locale us " + serverDateFormat.format(date));
-                String dateNew = convertTimeToLocal(serverDateFormat.format(date));
-                Log.v("DateConvertIssue", "at 83 after date locale def " + dateNew);
-                txtDate.setText(dateFormat.format(dateNew));
+                String strDate = getIntent().getStringExtra(Constants.DATE);
+                strDate = convertTimeToLocal(strDate);
+                txtDate.setText(strDate);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -91,13 +84,11 @@ public class MessageDetailActivity extends BaseActivity {
             if (cd.isConnectingToInternet()) {
                 hideKeyboard();
                 try {
+
                     SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
-                    String strTime = dateFormatter.format(new Date());
-                    strTime = convertTimeToLocal(strTime);
-                    Log.v("DateConvertIssue", "at 95 before date locale def : " + strTime);
 
                     RestClient.getMoneyMaker().messageRead(getIntent().getStringExtra(Constants.ID), session.getUserID(),
-                            strTime, new Callback<NotificationResult>() {
+                            dateFormatter.format(new Date()), new Callback<NotificationResult>() {
                                 @Override
                                 public void success(NotificationResult result, Response response) {
                                 }
@@ -122,7 +113,7 @@ public class MessageDetailActivity extends BaseActivity {
             }
         }
 
-        Log.v("current","in MessageDetailActivity");
+        Log.v("current", "in MessageDetailActivity");
     }
 
     public String convertTimeToLocal(String timeString) {
@@ -161,9 +152,9 @@ public class MessageDetailActivity extends BaseActivity {
         showProgressbar("Message Detail");
 
         try {
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
+
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
             String strTime = dateFormatter.format(new Date());
-            strTime = convertTimeToLocal(strTime);
 
             RestClient.getMoneyMaker().messageDetail(id, strTime, session.getUserID(), new Callback<MessageDetail>() {
                 @Override
@@ -175,18 +166,10 @@ public class MessageDetailActivity extends BaseActivity {
                         txtProName.setText("");
                         txtTitle.setText(result.getTitle());
 
-                        try {
-                            SimpleDateFormat serverDateFormat = new SimpleDateFormat(Constants.SERVER_DATETIME_FORMAT, Locale.US);
-                            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATETIME_FORMAT, Locale.US);
-                            //Converting the String back to java.util.Date
-                            Date date = serverDateFormat.parse(result.getDateTime());
-                            String strTime = serverDateFormat.format(date);
-                            strTime = convertTimeToLocal(strTime);
-                            txtDate.setText(strTime);
+                        String strTime = result.getDateTime();
+                        strTime = convertTimeToLocal(strTime);
+                        txtDate.setText(strTime);
 
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
                     } else if ((int) result.getStatus() == 0) {
                         toast("No Data Found");
                     }

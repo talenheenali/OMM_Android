@@ -203,12 +203,13 @@ public class OptionMoneyMaker extends Application {
                 if (actionType == OSNotificationAction.ActionType.ActionTaken)
                     Log.v("Notifnew", "Button pressed with id: " + result.action.actionID);
 
-                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
-                String strTime = dateFormatter.format(new Date());
-                strTime = convertTimeToLocal(strTime);
+                Log.v("Notifnew", "received date time : " + dateTimeStr);
+                dateTimeStr = convertTimeToLocal(dateTimeStr);
+
+                Log.v("Notifnew", "converted date time : " + dateTimeStr);
 
                 RestClient.getMoneyMaker().messageRead(msgID, session.getUserID(),
-                        strTime, new Callback<NotificationResult>() {
+                        dateTimeStr, new Callback<NotificationResult>() {
                             @Override
                             public void success(NotificationResult result, Response response) {
                                 if ((int) result.getStatus() == 1) {
@@ -250,10 +251,10 @@ public class OptionMoneyMaker extends Application {
         @Override
         public void notificationReceived(OSNotification notification) {
 
-            //this executes when notification is received ( wokred : bg and fg )
+            //this executes when notification is received ( worked : bg and fg )
              osNotificationPayload = notification.payload;
-             Log.v("ajtrial","at 185 notification received in App class "+osNotificationPayload.title);
-            Log.v("ajtrial", "at 185 notification received in App class " + osNotificationPayload.body);
+            Log.v("ajtrial", "at 185 notification received in App class TITLE " + osNotificationPayload.title);
+            Log.v("ajtrial", "at 185 notification received in App class BODY " + osNotificationPayload.body);
 
 
             new Handler(Looper.getMainLooper()).post(new Runnable() {

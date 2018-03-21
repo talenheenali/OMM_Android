@@ -80,11 +80,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("NOTIF_MESSAGE", messageDataModel.getMessage());
             values.put("NOTIF_ISREAD", messageDataModel.getIsRead());
 
-            returnId = sqLiteDatabase.insert(TABLE_NOTIFS_MASTER, null, values);
+            returnId = sqLiteDatabase.insertOrThrow(TABLE_NOTIFS_MASTER, null, values);
             Log.v("dbdemo", "newly inserted row id is = " + returnId + " , in table - " + TABLE_NOTIFS_MASTER);
 
         } catch (Exception e) {
-            e.printStackTrace();
+
+            if (e.getMessage().contains("UNIQUE constraint")) {
+                Log.v("SQLITEEXCEPTION", "data already present with id " + messageDataModel.getId());
+            } else {
+                e.printStackTrace();
+            }
+
         }
 
         sqLiteDatabase.close(); // Closing database connection
@@ -110,12 +116,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
                     messageDataModel = new MessageData();
                     messageDataModel.setId((cursor.getString(0)));
-                    //      Log.v("dbdemo","fetching - "+(cursor.getInt(0)));
                     messageDataModel.setTitle((cursor.getString(1)));
                     messageDataModel.setProductName((cursor.getString(2)));
-                    String tempString = cursor.getString(3);
-                    tempString = convertTimeToLocal(tempString);
-                    messageDataModel.setDateTime(tempString);
+
+                    String rawString = cursor.getString(3);
+                    rawString = convertTimeToLocal(rawString);
+                    messageDataModel.setDateTime(rawString);
+
                     messageDataModel.setMessage((cursor.getString(4)));
                     messageDataModel.setIsRead((cursor.getString(5)));
                     arrayList.add(messageDataModel);
@@ -201,6 +208,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 messageDataModel.setId(jsonObject1.getString("id"));
                 messageDataModel.setTitle(jsonObject1.getString("title"));
                 messageDataModel.setProductName(jsonObject1.getString("product_name"));
+
                 messageDataModel.setDateTime(jsonObject1.getString("date_time"));
                 messageDataModel.setMessage(jsonObject1.getString("message"));
                 messageDataModel.setIsRead(jsonObject1.getString("isRead"));
