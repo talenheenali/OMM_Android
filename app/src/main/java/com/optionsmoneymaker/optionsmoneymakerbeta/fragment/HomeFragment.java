@@ -35,10 +35,12 @@ import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import butterknife.ButterKnife;
 import retrofit.Callback;
@@ -206,6 +208,25 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
         }
     }
 
+    public String convertTimeToLocal(String timeString) {
+
+        try {
+
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = df.parse(timeString);
+            df.setTimeZone(TimeZone.getDefault());
+            formattedDate = df.format(date);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return formattedDate;
+
+    }
+
+
     @Override
     public void getUpdatedPayload(OSNotificationPayload notificationPayload) {
 
@@ -235,20 +256,23 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
             JSONObject jsonObject1 = jsonObject.getJSONObject("additionalData");
             int id = jsonObject1.getInt("message_id");
 
-            MessageData data = new MessageData();
-            data.setId(String.valueOf(id));
-            data.setTitle(title);
-            data.setMessage(body);
-            data.setDateTime(jsonObject1.getString("sent_time"));
+            MessageData forAdapter = new MessageData();
+            forAdapter.setId(String.valueOf(id));
+            forAdapter.setTitle(title);
+            forAdapter.setMessage(body);
+            String strDate = jsonObject1.getString("sent_time");
+            strDate = convertTimeToLocal(strDate);
+            forAdapter.setDateTime(strDate);
 
-//            Calendar c = Calendar.getInstance();
-//            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//            String formattedDate = df.format(c.getTime());
-            //data.setDateTime(formattedDate);
+            MessageData forDb = new MessageData();
+            forDb.setId(String.valueOf(id));
+            forDb.setTitle(title);
+            forDb.setMessage(body);
+            forDb.setDateTime(jsonObject1.getString("sent_time"));
 
-            messageAdapter.addNewItemToList(data);
+            messageAdapter.addNewItemToList(forAdapter);
 
-            new DatabaseHandler().storeNewNotif(data);
+            new DatabaseHandler().storeNewNotif(forDb);
             Log.v("ajtrial", "at 226 in home frag add new item complete hit");
 
             recyclerView.smoothScrollToPosition(0);
@@ -284,14 +308,6 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-    }
-
-
-
-    public String getCurrentDateAndTime() {
-
-        return DateFormat.getDateTimeInstance().format(new Date());
 
     }
 

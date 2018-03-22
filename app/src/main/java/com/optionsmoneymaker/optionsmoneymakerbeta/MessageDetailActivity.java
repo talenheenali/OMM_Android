@@ -136,19 +136,23 @@ public class MessageDetailActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         int id = item.getItemId();
         switch (id) {
 
             case android.R.id.home:
                 this.finish();
+                startActivity(MainActivity.class);
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
+
     }
 
     private void messageDetail(String id) {
+
         showProgressbar("Message Detail");
 
         try {
@@ -180,10 +184,12 @@ public class MessageDetailActivity extends BaseActivity {
                     Log.e("Message Detail", "API failure " + error);
                 }
             });
+
         } catch (Exception e) {
 
         } finally {
             dismiss();
         }
+
     }
 }

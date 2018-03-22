@@ -76,7 +76,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("NOTIF_ID", messageDataModel.getId());
             values.put("NOTIF_TITLE", messageDataModel.getTitle());
             values.put("NOTIF_PRODUCT_NAME", messageDataModel.getProductName());
-            values.put("NOTIF_DATE_TIME", messageDataModel.getDateTime());
+
+            String strDate = messageDataModel.getDateTime();
+            strDate = convertTimeToLocal(strDate);
+
+            values.put("NOTIF_DATE_TIME", strDate);
             values.put("NOTIF_MESSAGE", messageDataModel.getMessage());
             values.put("NOTIF_ISREAD", messageDataModel.getIsRead());
 
@@ -118,11 +122,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     messageDataModel.setId((cursor.getString(0)));
                     messageDataModel.setTitle((cursor.getString(1)));
                     messageDataModel.setProductName((cursor.getString(2)));
-
-                    String rawString = cursor.getString(3);
-                    rawString = convertTimeToLocal(rawString);
-                    messageDataModel.setDateTime(rawString);
-
+                    messageDataModel.setDateTime(cursor.getString(3));
                     messageDataModel.setMessage((cursor.getString(4)));
                     messageDataModel.setIsRead((cursor.getString(5)));
                     arrayList.add(messageDataModel);
@@ -194,31 +194,39 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         try {
 
+            Log.v("InsertData", "arraylist received from server size " + arrayList.size());
+
             //collect the server response into arraylist
 
             JSONObject jsonObject = new JSONObject(rawJsonDataString);
             String status = jsonObject.getString("status");
 
             JSONArray jsonArray = jsonObject.getJSONArray("data");
+            Log.v("InsertData", "jsonArray received from server size " + jsonArray.length());
 
-            for (int i = 0; i < jsonArray.length(); i++) {
+            if (jsonArray.length() > 0) {
 
-                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-                messageDataModel = new MessageData();
-                messageDataModel.setId(jsonObject1.getString("id"));
-                messageDataModel.setTitle(jsonObject1.getString("title"));
-                messageDataModel.setProductName(jsonObject1.getString("product_name"));
+                deleteAllNotifs();
 
-                messageDataModel.setDateTime(jsonObject1.getString("date_time"));
-                messageDataModel.setMessage(jsonObject1.getString("message"));
-                messageDataModel.setIsRead(jsonObject1.getString("isRead"));
-                arrayList.add(messageDataModel);
+                for (int i = 0; i < jsonArray.length(); i++) {
 
-            }
+                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                    messageDataModel = new MessageData();
+                    messageDataModel.setId(jsonObject1.getString("id"));
+                    messageDataModel.setTitle(jsonObject1.getString("title"));
+                    messageDataModel.setProductName(jsonObject1.getString("product_name"));
+                    messageDataModel.setDateTime(jsonObject1.getString("date_time"));
+                    messageDataModel.setMessage(jsonObject1.getString("message"));
+                    messageDataModel.setIsRead(jsonObject1.getString("isRead"));
+                    arrayList.add(messageDataModel);
 
-            //add data into db
-            for (int j = 0; j < arrayList.size(); j++) {
-                storeNewNotif(arrayList.get(j));
+                }
+
+                //add data into db
+                for (int j = 0; j < arrayList.size(); j++) {
+                    storeNewNotif(arrayList.get(j));
+                }
+
             }
 
         } catch (JSONException e) {
@@ -231,6 +239,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getWritableDatabase();
         int res = db.delete(TABLE_NOTIFS_MASTER, "NOTIF_ID" + " = " + notifId, null);
+        Log.v("deleteLog", "delete return value from " + TABLE_NOTIFS_MASTER + " - " + res);
+        db.close();
+
+    }
+
+    public void deleteAllNotifs() {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        int res = db.delete(TABLE_NOTIFS_MASTER, null, null);
         Log.v("deleteLog", "delete return value from " + TABLE_NOTIFS_MASTER + " - " + res);
         db.close();
 

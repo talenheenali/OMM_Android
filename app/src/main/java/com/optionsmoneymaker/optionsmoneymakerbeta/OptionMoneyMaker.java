@@ -256,7 +256,6 @@ public class OptionMoneyMaker extends Application {
             Log.v("ajtrial", "at 185 notification received in App class TITLE " + osNotificationPayload.title);
             Log.v("ajtrial", "at 185 notification received in App class BODY " + osNotificationPayload.body);
 
-
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
