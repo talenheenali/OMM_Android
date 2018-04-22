@@ -18,8 +18,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.onesignal.OSNotificationPayload;
-import com.onesignal.OneSignal;
 import com.optionsmoneymaker.optionsmoneymakerbeta.OptionMoneyMaker;
 import com.optionsmoneymaker.optionsmoneymakerbeta.R;
 import com.optionsmoneymaker.optionsmoneymakerbeta.adapter.NewMessageAdapter;
@@ -56,7 +54,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
     public static boolean active = false;
     ProgressBar progressBar;
     RecyclerView recyclerView;
-    OneSignal.NotificationReceivedHandler handler;
+    //  OneSignal.NotificationReceivedHandler handler;
     NewMessageAdapter messageAdapter;
     ArrayList<MessageData> list;
     RecyclerView.LayoutManager mLayoutManager;
@@ -226,11 +224,10 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
 
     }
 
-
     @Override
-    public void getUpdatedPayload(OSNotificationPayload notificationPayload) {
+    public void getUpdatedPayload(String notificationPayload) {
 
-        Log.v("ajtrial", "at 208 in homefrag data is " + notificationPayload.toJSONObject().toString());
+        Log.v("ajtrial", "at 208 in homefrag data is " + notificationPayload);
 
         try {
 
@@ -238,7 +235,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
             Ringtone r = RingtoneManager.getRingtone(OptionMoneyMaker.getInstance(), notification);
             r.play();
 
-            JSONObject jsonObject = notificationPayload.toJSONObject();
+            JSONObject jsonObject = new JSONObject(notificationPayload);
             String body = jsonObject.optString("body");
             String title = jsonObject.optString("title");
 

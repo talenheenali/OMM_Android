@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import com.onesignal.OneSignal;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.optionsmoneymaker.optionsmoneymakerbeta.model.SuccessResult;
 import com.optionsmoneymaker.optionsmoneymakerbeta.rest.RestClient;
 
@@ -34,6 +34,7 @@ public class LoginActivity extends BaseActivity{
   EditText eTxtPassword;
   @BindView(R.id.btn_login)
   Button btnLogin;
+  FirebaseInstanceId firebaseInstanceId;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -90,16 +91,21 @@ public class LoginActivity extends BaseActivity{
     showProgressbar("Login");
 
     try {
-      OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
-        @Override
-        public void idsAvailable(String userId, String registrationId) {
-          Log.e("debug", "User:" + userId);
-          if (registrationId != null)
-            Log.e("debug", "registrationId:" + registrationId);
 
-          session.setRegisterID(userId);
-        }
-      });
+      firebaseInstanceId = FirebaseInstanceId.getInstance();
+      String token = firebaseInstanceId.getToken();
+
+      if (token != null)
+        Log.e("FBTOKEN", "registrationId:" + token);
+
+      session.setRegisterID(token);
+
+//      OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+//        @Override
+//        public void idsAvailable(String userId, String registrationId) {
+//
+//        }
+//      });
 
       RestClient.getMoneyMaker().login("api_login",eTxtUserName.getText().toString().trim(),eTxtPassword.getText().toString(),session.getRegisterID(), new Callback<SuccessResult>() {
                 @Override
@@ -124,5 +130,6 @@ public class LoginActivity extends BaseActivity{
     }catch (Exception e){
       dismiss();
     }
+
   }
 }

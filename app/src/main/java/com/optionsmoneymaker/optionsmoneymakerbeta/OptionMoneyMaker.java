@@ -5,40 +5,20 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.multidex.MultiDex;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.onesignal.OSNotification;
-import com.onesignal.OSNotificationAction;
-import com.onesignal.OSNotificationOpenResult;
-import com.onesignal.OSNotificationPayload;
-import com.onesignal.OneSignal;
-import com.onesignal.shortcutbadger.ShortcutBadger;
 import com.optionsmoneymaker.optionsmoneymakerbeta.fragment.HomeFragment;
-import com.optionsmoneymaker.optionsmoneymakerbeta.model.MessageData;
-import com.optionsmoneymaker.optionsmoneymakerbeta.model.NotificationResult;
-import com.optionsmoneymaker.optionsmoneymakerbeta.rest.RestClient;
 import com.optionsmoneymaker.optionsmoneymakerbeta.utils.ConnectionDetector;
-import com.optionsmoneymaker.optionsmoneymakerbeta.utils.Constants;
 import com.optionsmoneymaker.optionsmoneymakerbeta.utils.DeliveryInterface;
 import com.optionsmoneymaker.optionsmoneymakerbeta.utils.SessionManager;
-
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 /**
  * Created by Sagar on 07-10-2016.
@@ -49,12 +29,13 @@ public class OptionMoneyMaker extends Application {
     private static MainActivity mainActivityContext;
     private static HomeFragment homeFragmentContext;
     private static OptionMoneyMaker mInstance;
-    OSNotificationPayload osNotificationPayload;
+    //  OSNotificationPayload osNotificationPayload;
     String formattedDate;
     private ConnectionDetector cd;
     private SessionManager session;
     private int badgeCount = 0;
     private Activity mCurrentActivity = null;
+    private int notiCounter;
 
     public static MainActivity getMainActivityContext() {
         return mainActivityContext;
@@ -112,11 +93,11 @@ public class OptionMoneyMaker extends Application {
         cd = new ConnectionDetector(getApplicationContext());
         session = new SessionManager(getApplicationContext());
 
-        OneSignal.startInit(this)
-                .setNotificationOpenedHandler(new ExampleNotificationOpenedHandler())
-                .setNotificationReceivedHandler(new CustomNotificationReceivedHandler())
-                .inFocusDisplaying(null)
-                .init();
+        //   OneSignal.startInit(this)
+        //           .setNotificationOpenedHandler(new ExampleNotificationOpenedHandler())
+        //           .setNotificationReceivedHandler(new CustomNotificationReceivedHandler())
+        //           .inFocusDisplaying(null)
+        //           .init();
 //        OneSignal.setInFocusDisplaying(OneSignal.OSInFocusDisplayOption.InAppAlert);
 
         /*OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
@@ -133,8 +114,7 @@ public class OptionMoneyMaker extends Application {
     }
 
     @Override
-    protected void attachBaseContext(Context base)
-    {
+    protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(OptionMoneyMaker.this);
     }
@@ -142,8 +122,13 @@ public class OptionMoneyMaker extends Application {
     private void showBadge() {
 
         badgeCount++;
-        ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
+        //  ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
 
+    }
+
+    public int getCounter() {
+        notiCounter++;
+        return notiCounter;
     }
 
     public void showNewMessageArrived() {
@@ -151,7 +136,7 @@ public class OptionMoneyMaker extends Application {
         Log.v("ajtrial", "at 254 in app class shownewmessage arrived hit");
         //this executes when notification is received ( worked : fg only )
         DeliveryInterface deliveryInterface = (DeliveryInterface) OptionMoneyMaker.getHomeFragmentContext();
-        deliveryInterface.getUpdatedPayload(osNotificationPayload);
+        //  deliveryInterface.getUpdatedPayload(osNotificationPayload);
 
     }
 
@@ -181,6 +166,8 @@ public class OptionMoneyMaker extends Application {
 
     }
 
+
+    /*
     private class ExampleNotificationOpenedHandler implements OneSignal.NotificationOpenedHandler {
 
         @Override
@@ -252,7 +239,7 @@ public class OptionMoneyMaker extends Application {
         public void notificationReceived(OSNotification notification) {
 
             //this executes when notification is received ( worked : bg and fg )
-             osNotificationPayload = notification.payload;
+            osNotificationPayload = notification.payload;
             Log.v("ajtrial", "at 185 notification received in App class TITLE " + osNotificationPayload.title);
             Log.v("ajtrial", "at 185 notification received in App class BODY " + osNotificationPayload.body);
 
@@ -281,5 +268,6 @@ public class OptionMoneyMaker extends Application {
         }
     }
 
+  */
 
 }

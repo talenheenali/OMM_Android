@@ -1,6 +1,5 @@
 package com.optionsmoneymaker.optionsmoneymakerbeta.utils;
 
-import com.onesignal.OSNotificationPayload;
 
 /**
  * Created by Ajinkya on 1/5/2018.
@@ -9,5 +8,5 @@ import com.onesignal.OSNotificationPayload;
 public interface DeliveryInterface {
 
 
-    void getUpdatedPayload(OSNotificationPayload notificationPayload);
+    void getUpdatedPayload(String notificationPayload);
 }

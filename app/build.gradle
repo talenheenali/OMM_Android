@@ -1,7 +1,7 @@
-plugins {
-    id 'com.onesignal.androidsdk.onesignal-gradle-plugin' version '0.8.1'
-}
-apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
+//plugins {
+//    id 'com.onesignal.androidsdk.onesignal-gradle-plugin' version '0.8.1'
+//}
+//apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 apply plugin: 'com.android.application'
 
 android {
@@ -13,9 +13,9 @@ android {
         versionCode 18
         versionName "3.1"
 
-        manifestPlaceholders = [onesignal_app_id : "6d7c78c6-789e-40d8-a307-0b70887be901",
-                                // Project number pulled from dashboard, local value is ignored.
-                                onesignal_google_project_number: "REMOTE"]
+//        manifestPlaceholders = [onesignal_app_id : "6d7c78c6-789e-40d8-a307-0b70887be901",
+//                                // Project number pulled from dashboard, local value is ignored.
+//                                onesignal_google_project_number: "REMOTE"]
 
 
     }
@@ -43,7 +43,7 @@ dependencies {
     //  implementation 'com.squareup.okhttp3:okhttp:3.9.1'
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-    compile 'com.onesignal:OneSignal:[3.7.1, 3.99.99]'
+  //  compile 'com.onesignal:OneSignal:[3.7.1, 3.99.99]'
     compile 'org.greenrobot:eventbus:3.1.1'
     compile 'com.android.support:multidex:1.0.2'
 }

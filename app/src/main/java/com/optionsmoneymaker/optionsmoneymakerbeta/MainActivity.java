@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.optionsmoneymaker.optionsmoneymakerbeta.fragment.AboutFragment;
 import com.optionsmoneymaker.optionsmoneymakerbeta.fragment.FragmentDrawer;
 import com.optionsmoneymaker.optionsmoneymakerbeta.fragment.HelpFragment;
@@ -42,6 +43,8 @@ public class MainActivity extends BaseActivity implements FragmentDrawer.Fragmen
         // display the first navigation drawer view on app launch
         displayView(0);
         Log.v("current","in MainActivity");
+
+        FirebaseMessaging.getInstance().subscribeToTopic("OMM");
 
     }
 
