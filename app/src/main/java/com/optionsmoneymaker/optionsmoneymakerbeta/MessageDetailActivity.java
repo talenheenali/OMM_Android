@@ -67,6 +67,7 @@ public class MessageDetailActivity extends BaseActivity {
         nMgr.cancelAll();
 
         if (getIntent().getStringExtra(Constants.TYPE).equalsIgnoreCase("list")) {
+
             webView.loadDataWithBaseURL("", getIntent().getStringExtra(Constants.MESSAGE), mimeType, encoding, "");
             txtProName.setText(getIntent().getStringExtra(Constants.PRODUCT));
             txtTitle.setText(getIntent().getStringExtra(Constants.TITLE));
@@ -166,8 +167,8 @@ public class MessageDetailActivity extends BaseActivity {
 
                     if ((int) result.getStatus() == 1) {
                         webView.loadDataWithBaseURL("", result.getMessage(), mimeType, encoding, "");
-//                        txtProName.setText(result.getProductName());
-                        txtProName.setText("");
+                        txtProName.setText(result.getProductName());
+                        //    txtProName.setText("AppTet");
                         txtTitle.setText(result.getTitle());
 
                         String strTime = result.getDateTime();

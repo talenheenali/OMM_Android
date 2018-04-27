@@ -246,9 +246,11 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
                 notificationPayload.setTitle("--");
             }
 
+            new DatabaseHandler().storeNewNotif(notificationPayload);
+
+            notificationPayload.setDateTime(convertTimeToLocal(notificationPayload.getDateTime()));
             messageAdapter.addNewItemToList(notificationPayload);
 
-            new DatabaseHandler().storeNewNotif(notificationPayload);
             Log.v("ajtrial", "at 226 in home frag add new item complete hit");
 
             recyclerView.smoothScrollToPosition(0);
