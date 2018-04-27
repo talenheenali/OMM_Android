@@ -31,6 +31,13 @@ public class FBMessgingService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
 
         Log.v(TAG, "From: " + remoteMessage.getFrom());
+        Log.v(TAG, "RAW Content toString : " + remoteMessage.getData().toString());
+        Log.v(TAG, "RAW notification_id : " + remoteMessage.getData().get("notification_id"));
+        Log.v(TAG, "RAW notification_title : " + remoteMessage.getData().get("notification_title"));
+        Log.v(TAG, "RAW notification_message : " + remoteMessage.getData().get("notification_message"));
+        Log.v(TAG, "RAW notification_product_name : " + remoteMessage.getData().get("notification_product_name"));
+        Log.v(TAG, "RAW notification_sent_time : " + remoteMessage.getData().get("notification_sent_time"));
+        Log.v(TAG, "RAW notification_isread : " + remoteMessage.getData().get("notification_isread"));
 
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
