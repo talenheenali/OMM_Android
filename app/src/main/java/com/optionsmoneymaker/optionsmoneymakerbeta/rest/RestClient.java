@@ -43,9 +43,11 @@ public class RestClient {
                 .setClient(new OkClient(okHttpClient))
                 .setConverter(new GsonConverter(new Gson()))
                 .build();
+
     }
 
     public static MoneyMaker getMoneyMaker() {
         return REST_CLIENT_MONEY_MAKER;
     }
+
 }

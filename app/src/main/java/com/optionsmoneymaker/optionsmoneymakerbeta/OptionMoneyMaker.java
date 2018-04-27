@@ -20,10 +20,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/**
- * Created by Sagar on 07-10-2016.
- */
-
 public class OptionMoneyMaker extends Application {
 
     private static MainActivity mainActivityContext;
@@ -31,11 +27,11 @@ public class OptionMoneyMaker extends Application {
     private static OptionMoneyMaker mInstance;
     //  OSNotificationPayload osNotificationPayload;
     String formattedDate;
+    int notiCounter;
     private ConnectionDetector cd;
     private SessionManager session;
     private int badgeCount = 0;
     private Activity mCurrentActivity = null;
-    private int notiCounter;
 
     public static MainActivity getMainActivityContext() {
         return mainActivityContext;
@@ -76,6 +72,7 @@ public class OptionMoneyMaker extends Application {
             List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
             ComponentName componentInfo = taskInfo.get(0).topActivity;
             if (componentInfo.getPackageName().equals(context.getPackageName())) {
+
                 isInBackground = false;
             }
         }

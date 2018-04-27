@@ -225,7 +225,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
     }
 
     @Override
-    public void getUpdatedPayload(String notificationPayload) {
+    public void getUpdatedPayload(MessageData notificationPayload) {
 
         Log.v("ajtrial", "at 208 in homefrag data is " + notificationPayload);
 
@@ -235,41 +235,20 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
             Ringtone r = RingtoneManager.getRingtone(OptionMoneyMaker.getInstance(), notification);
             r.play();
 
-            JSONObject jsonObject = new JSONObject(notificationPayload);
-            String body = jsonObject.optString("body");
-            String title = jsonObject.optString("title");
+            Log.v("jsondata", "body - " + notificationPayload.getMessage());
+            Log.v("jsondata", "title - " + notificationPayload.getTitle());
 
-            Log.v("jsondata", "body - " + body);
-            Log.v("jsondata", "title - " + title);
-
-            if (body.equals("") || body.isEmpty()) {
-                body = " -- ";
+            if (notificationPayload.getMessage().equals("") || notificationPayload.getMessage().isEmpty()) {
+                notificationPayload.setMessage("--");
             }
 
-            if (title.equals("") || title.isEmpty()) {
-                title = " -- ";
+            if (notificationPayload.getTitle().equals("") || notificationPayload.getTitle().isEmpty()) {
+                notificationPayload.setTitle("--");
             }
 
-            JSONObject jsonObject1 = jsonObject.getJSONObject("additionalData");
-            int id = jsonObject1.getInt("message_id");
+            messageAdapter.addNewItemToList(notificationPayload);
 
-            MessageData forAdapter = new MessageData();
-            forAdapter.setId(String.valueOf(id));
-            forAdapter.setTitle(title);
-            forAdapter.setMessage(body);
-            String strDate = jsonObject1.getString("sent_time");
-            strDate = convertTimeToLocal(strDate);
-            forAdapter.setDateTime(strDate);
-
-            MessageData forDb = new MessageData();
-            forDb.setId(String.valueOf(id));
-            forDb.setTitle(title);
-            forDb.setMessage(body);
-            forDb.setDateTime(jsonObject1.getString("sent_time"));
-
-            messageAdapter.addNewItemToList(forAdapter);
-
-            new DatabaseHandler().storeNewNotif(forDb);
+            new DatabaseHandler().storeNewNotif(notificationPayload);
             Log.v("ajtrial", "at 226 in home frag add new item complete hit");
 
             recyclerView.smoothScrollToPosition(0);
@@ -302,7 +281,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
                 r.play();
             }
 
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

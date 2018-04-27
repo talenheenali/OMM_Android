@@ -2,7 +2,8 @@ package com.optionsmoneymaker.optionsmoneymakerbeta.utils;
 
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.content.res.Resources;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -10,6 +11,10 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.optionsmoneymaker.optionsmoneymakerbeta.OptionMoneyMaker;
 import com.optionsmoneymaker.optionsmoneymakerbeta.R;
+import com.optionsmoneymaker.optionsmoneymakerbeta.model.MessageData;
+import com.optionsmoneymaker.optionsmoneymakerbeta.sqlitedb.DatabaseHandler;
+
+import static com.optionsmoneymaker.optionsmoneymakerbeta.OptionMoneyMaker.isAppIsInBackground;
 
 /**
  * Created by Ajinkya W on 4/15/2018.
@@ -18,38 +23,85 @@ import com.optionsmoneymaker.optionsmoneymakerbeta.R;
 public class FBMessgingService extends FirebaseMessagingService {
 
     String TAG = "FCMDEBUG";
+    MessageData messageData;
+    private int badgeCount = 0;
 
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
+    public void onMessageReceived(final RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
         Log.v(TAG, "From: " + remoteMessage.getFrom());
 
-        // Check if message contains a data payload.
-        if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-            showNotification(remoteMessage.getData().toString());
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
 
-        }
+                try {
 
-        // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-            showNotification(remoteMessage.getNotification().getBody());
-        }
+                    messageData = new MessageData();
+                    messageData.setId(remoteMessage.getData().get("notification_id"));
+                    messageData.setTitle(remoteMessage.getData().get("notification_title"));
+                    messageData.setMessage(remoteMessage.getData().get("notification_message"));
+                    messageData.setProductName(remoteMessage.getData().get("notification_product_name"));
+                    messageData.setDateTime(remoteMessage.getData().get("notification_sent_time"));
+                    messageData.setIsRead(remoteMessage.getData().get("notification_isread"));
+
+                    if (!isAppIsInBackground(getApplicationContext())) {
+
+                        Log.v("ajtrial", "app is in foreground");
+                        showNewMessageArrived(messageData);
+                        Log.v("ajtrial", "notif data : " + remoteMessage.getData().toString());
+
+                    } else {
+
+                        Log.v("ajtrial", "app is in background");
+                        showBadge();
+                        showNotification(messageData);
+                        //this executes when notification is received ( wokred : bg )
+
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+//        // Check if message contains a notification payload.
+//        if (remoteMessage.getNotification() != null) {
+//            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+//            showNotification(remoteMessage.getNotification().getBody());
+//        }
 
 
     }
 
-    public void showNotification(String content) {
+    private void showBadge() {
+
+        badgeCount++;
+        //  ShortcutBadger.applyCount(getApplicationContext(), badgeCount);
+
+    }
+
+    public void showNewMessageArrived(MessageData notifData) {
+
+        Log.v("ajtrial", "at 254 in app class shownewmessage arrived hit");
+        //this executes when notification is received ( worked : fg only )
+        DeliveryInterface deliveryInterface = (DeliveryInterface) OptionMoneyMaker.getHomeFragmentContext();
+        deliveryInterface.getUpdatedPayload(notifData);
+
+    }
+
+    public void showNotification(MessageData content) {
 
         Log.v("notifResponse", "giving a notification for isLiveALL for mainACt");
+        new DatabaseHandler().storeNewNotif(content);
 
-        Resources r = getResources();
         Notification notification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(("New Notification Received"))
-                .setContentText(content)
+                .setContentText(content.getMessage())
                 .setAutoCancel(true)
                 .build();
 

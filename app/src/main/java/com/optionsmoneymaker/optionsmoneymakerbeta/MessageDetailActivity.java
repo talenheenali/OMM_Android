@@ -186,7 +186,7 @@ public class MessageDetailActivity extends BaseActivity {
             });
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
             dismiss();
         }

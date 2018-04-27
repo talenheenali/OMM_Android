@@ -21,9 +21,6 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-/**
- * Created by Sagar on 03-10-2016.
- */
 public class LoginActivity extends BaseActivity{
 
   @BindView(R.id.ll_progressbar)
@@ -110,15 +107,20 @@ public class LoginActivity extends BaseActivity{
       RestClient.getMoneyMaker().login("api_login",eTxtUserName.getText().toString().trim(),eTxtPassword.getText().toString(),session.getRegisterID(), new Callback<SuccessResult>() {
                 @Override
                 public void success(SuccessResult result, Response response) {
-                  if ((int) result.getStatus() == 1) {
-                    toast(result.getMessage());
+
+                    if ((int) result.getStatus() == 1) {
+
+                        toast(result.getMessage());
                     session.createLoginSession(result.getEmail(), result.getUserId(), "", result.getFirstName(), result.getLastName(), result.getLevelName(), "");
                     startActivity(MainActivity.class);
                     finish();
-                  } else if ((int) result.getStatus() == 0) {
+
+                    } else if ((int) result.getStatus() == 0) {
                     toast(result.getData());
                   }
-                  dismiss();
+
+                    dismiss();
+
                 }
 
                 @Override
@@ -127,6 +129,7 @@ public class LoginActivity extends BaseActivity{
                   dismiss();
                 }
               });
+
     }catch (Exception e){
       dismiss();
     }
