@@ -6,6 +6,7 @@ import com.optionsmoneymaker.optionsmoneymakerbeta.model.MessageDetail;
 import com.optionsmoneymaker.optionsmoneymakerbeta.model.MessageResult;
 import com.optionsmoneymaker.optionsmoneymakerbeta.model.NotificationResult;
 import com.optionsmoneymaker.optionsmoneymakerbeta.model.SuccessResult;
+import com.optionsmoneymaker.optionsmoneymakerbeta.model.TokenUpdateResult;
 
 import retrofit.Callback;
 import retrofit.client.Response;
@@ -78,5 +79,10 @@ public interface MoneyMaker {
     void logout(@Query("user_id") String userID,
                 @Query("device_token") String regID,
                 Callback<SuccessResult> callback);
+
+    @POST("/update_device_token")
+    void updateFirebaseToken(@Query("device_id") String newToken,
+                             @Query("userId") String userId,
+                             Callback<TokenUpdateResult> callBack);
 
 }

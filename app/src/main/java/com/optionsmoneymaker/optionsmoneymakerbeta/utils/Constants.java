@@ -21,4 +21,8 @@ public interface Constants {
     String SERVER_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     String TITLE = "title";
     String REFRESH_MESSAGES = "refreshScreen";
+
+    String login = "LoginName";
+    String token = "FBToken";
+
 }

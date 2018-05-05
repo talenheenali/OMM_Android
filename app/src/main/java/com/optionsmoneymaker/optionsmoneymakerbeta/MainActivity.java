@@ -1,7 +1,10 @@
 package com.optionsmoneymaker.optionsmoneymakerbeta;
 
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,11 +14,18 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.optionsmoneymaker.optionsmoneymakerbeta.fragment.AboutFragment;
 import com.optionsmoneymaker.optionsmoneymakerbeta.fragment.FragmentDrawer;
 import com.optionsmoneymaker.optionsmoneymakerbeta.fragment.HelpFragment;
 import com.optionsmoneymaker.optionsmoneymakerbeta.fragment.HomeFragment;
 import com.optionsmoneymaker.optionsmoneymakerbeta.fragment.SettingFragment;
+import com.optionsmoneymaker.optionsmoneymakerbeta.model.TokenUpdateResult;
+import com.optionsmoneymaker.optionsmoneymakerbeta.rest.RestClient;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class MainActivity extends BaseActivity implements FragmentDrawer.FragmentDrawerListener {
 
@@ -41,9 +51,43 @@ public class MainActivity extends BaseActivity implements FragmentDrawer.Fragmen
 
         // display the first navigation drawer view on app launch
         displayView(0);
-        Log.v("current","in MainActivity");
+        Log.v("current", "in MainActivity");
 
         //      FirebaseMessaging.getInstance().subscribeToTopic("OMM");
+
+        if (FirebaseInstanceId.getInstance().getToken() != session.getRegisterID()) {
+
+            RestClient.getMoneyMaker().updateFirebaseToken(FirebaseInstanceId.getInstance().getToken(), session.getUserID(), new Callback<TokenUpdateResult>() {
+                @Override
+                public void success(TokenUpdateResult tokenUpdateResult, Response response) {
+
+                    if (null != session)
+                        session.setRegisterID(FirebaseInstanceId.getInstance().getToken());
+
+                }
+
+                @Override
+                public void failure(RetrofitError retrofitError) {
+
+                }
+            });
+
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            String id = "OMM_NOTIFICATIONS";
+            // The user-visible name of the channel.
+            CharSequence name = "OMM";
+            // The user-visible description of the channel.
+            String description = "OMM NOTIFICATIONS";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel mChannel = new NotificationChannel(id, name, importance);
+            // Configure the notification channel.
+            mChannel.setDescription(description);
+            notificationManager.createNotificationChannel(mChannel);
+        }
 
     }
 

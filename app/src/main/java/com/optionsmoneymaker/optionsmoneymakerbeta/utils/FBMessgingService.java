@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.media.RingtoneManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
@@ -172,16 +173,21 @@ public class FBMessgingService extends FirebaseMessagingService {
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), id, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification notification = new NotificationCompat.Builder(this)
+        String channel_id = "OMM_NOTIFICATIONS";
+
+        Notification notification = new NotificationCompat.Builder(this, "OMM")
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(content.getTitle())
                 .setContentText(Html.fromHtml(content.getMessage()))
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setChannelId(channel_id)
                 .build();
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(id, notification);
+
 
     }
 
