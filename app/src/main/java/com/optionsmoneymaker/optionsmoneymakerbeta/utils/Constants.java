@@ -1,8 +1,6 @@
 package com.optionsmoneymaker.optionsmoneymakerbeta.utils;
 
-/**
- * Created by Sagar on 04-10-2016.
- */
+
 public interface Constants {
 
     //    String API_URL = "http://www.omm.talenalexanderdev.com/wp-json/omm/v1";
@@ -10,7 +8,7 @@ public interface Constants {
 //    String API_URL = "http://www.omm.talenalexanderdev.com/wp-json/omm/v1";
 //    String API_URL = "http://www.foliuminfotech.com/omm/admin/";
     //LIVE URL
-    String API_URL = "http://www.optionsmoneymaker.com/wp-json/omm/v1";
+    String API_URL = "https://www.optionsmoneymaker.com/wp-json/omm/v1";
     String ID = "id";
     String MESSAGE = "message";
 
