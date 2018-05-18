@@ -46,9 +46,6 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
-/**
- * Created by Sagar on 10/1/2016.
- */
 public class HomeFragment extends BaseFragment implements DeliveryInterface, CallBacks {
 
     public static boolean active = false;
@@ -119,7 +116,6 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
                         if (main.getInt("status") == 1) {
 
                             session.setFirstTime(false);
-
                             //session.setLatestMessage(main.toString());
 
                             Log.v("datalog", "at 195 homefrag " + main.toString());
@@ -177,7 +173,6 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
     @Subscribe()
     public void onMessageEvent(MessageEvent event) {
         /* Do something */
-
     }
 
     @Override

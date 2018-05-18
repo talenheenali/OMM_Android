@@ -63,7 +63,13 @@ public class FBMessgingService extends FirebaseMessagingService {
                     messageData.setId(remoteMessage.getData().get("notification_id"));
                     messageData.setTitle(remoteMessage.getData().get("notification_title"));
                     messageData.setMessage(remoteMessage.getData().get("notification_message"));
-                    messageData.setProductName(remoteMessage.getData().get("notification_product_name"));
+
+                    if ("apptest".equalsIgnoreCase(remoteMessage.getData().get("notification_product_name"))) {
+                        messageData.setProductName("App Test");
+                    } else {
+                        messageData.setProductName(remoteMessage.getData().get("notification_product_name"));
+                    }
+
                     messageData.setDateTime(remoteMessage.getData().get("notification_sent_time"));
                     messageData.setIsRead(remoteMessage.getData().get("notification_isread"));
 

@@ -1,18 +1,29 @@
 package com.optionsmoneymaker.optionsmoneymakerbeta;
 
 import android.app.NotificationManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.TextView;
 
+import com.optionsmoneymaker.optionsmoneymakerbeta.model.MessageData;
 import com.optionsmoneymaker.optionsmoneymakerbeta.model.MessageDetail;
 import com.optionsmoneymaker.optionsmoneymakerbeta.model.NotificationResult;
 import com.optionsmoneymaker.optionsmoneymakerbeta.rest.RestClient;
+import com.optionsmoneymaker.optionsmoneymakerbeta.sqlitedb.DatabaseHandler;
 import com.optionsmoneymaker.optionsmoneymakerbeta.utils.Constants;
+import com.optionsmoneymaker.optionsmoneymakerbeta.utils.DeliveryInterface;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,10 +35,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-/**
- * Created by Sagar on 10/13/2016.
- */
-public class MessageDetailActivity extends BaseActivity {
+public class MessageDetailActivity extends BaseActivity implements DeliveryInterface {
 
     private final String mimeType = "text/html";
     private final String encoding = "UTF-8";
@@ -190,6 +198,71 @@ public class MessageDetailActivity extends BaseActivity {
             e.printStackTrace();
         } finally {
             dismiss();
+        }
+
+    }
+
+    @Override
+    public void getUpdatedPayload(MessageData notificationPayload) {
+
+        Log.v("ajtrial", "at 208 in MessageDetailActivity data is " + notificationPayload);
+
+        try {
+
+            Uri notification = RingtoneManager.getActualDefaultRingtoneUri(OptionMoneyMaker.getInstance(), RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(OptionMoneyMaker.getInstance(), notification);
+            r.play();
+
+            Log.v("jsondata", "body - " + notificationPayload.getMessage());
+            Log.v("jsondata", "title - " + notificationPayload.getTitle());
+
+            if (notificationPayload.getMessage().equals("") || notificationPayload.getMessage().isEmpty()) {
+                notificationPayload.setMessage("--");
+            }
+
+            if (notificationPayload.getTitle().equals("") || notificationPayload.getTitle().isEmpty()) {
+                notificationPayload.setTitle("--");
+            }
+
+            new DatabaseHandler().storeNewNotif(notificationPayload);
+
+            notificationPayload.setDateTime(convertTimeToLocal(notificationPayload.getDateTime()));
+        //    messageAdapter.addNewItemToList(notificationPayload);
+
+            Log.v("ajtrial", "at 226 in home frag add new item complete hit");
+
+        //    recyclerView.smoothScrollToPosition(0);
+
+            LayoutInflater inflater = this.getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.new_message_dialog, null);
+
+            AlertDialog.Builder builder;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder = new AlertDialog.Builder(MessageDetailActivity.this, android.R.style.Theme_DeviceDefault_Dialog_NoActionBar);
+            } else {
+                builder = new AlertDialog.Builder(MessageDetailActivity.this);
+            }
+
+            builder.setView(dialogView);
+            final AlertDialog alertDialog = builder.create();
+
+            Button btn = dialogView.findViewById(R.id.btnOk);
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    alertDialog.cancel();
+                }
+            });
+
+            alertDialog.show();
+
+            if (!r.isPlaying()) {
+                r.play();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
