@@ -35,7 +35,7 @@ public interface MoneyMaker {
     void lastMessage(@Query("userId") String userID,
                      Callback<Response> callback);
 
-    @GET("/omm_api.php")
+    @GET("/about_us")
     void aboutUS(@Query("api_call") String apiName,
                  Callback<About> callback);
 

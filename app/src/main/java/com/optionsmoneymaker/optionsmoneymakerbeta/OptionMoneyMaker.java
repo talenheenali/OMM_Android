@@ -22,6 +22,7 @@ import java.util.TimeZone;
 
 public class OptionMoneyMaker extends Application {
 
+    private static MessageDetailActivity messageDetailActivity;
     private static MainActivity mainActivityContext;
     private static HomeFragment homeFragmentContext;
     private static OptionMoneyMaker mInstance;
@@ -32,6 +33,15 @@ public class OptionMoneyMaker extends Application {
     private SessionManager session;
     private int badgeCount = 0;
     private Activity mCurrentActivity = null;
+
+    public static MessageDetailActivity getMessageDetailActivity() {
+        return messageDetailActivity;
+    }
+
+    public static void setMessageDetailActivity(MessageDetailActivity messageDetailActivity) {
+        OptionMoneyMaker.messageDetailActivity = messageDetailActivity;
+    }
+
 
     public static MainActivity getMainActivityContext() {
         return mainActivityContext;

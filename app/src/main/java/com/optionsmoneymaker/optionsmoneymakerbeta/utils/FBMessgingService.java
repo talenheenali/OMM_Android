@@ -5,10 +5,12 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.media.RingtoneManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -84,7 +86,6 @@ public class FBMessgingService extends FirebaseMessagingService {
                         Log.v("ajtrial", "app is in background");
                         showBadge();
                         showNotification(messageData);
-                        //this executes when notification is received ( wokred : bg )
 
                     }
 
@@ -115,8 +116,13 @@ public class FBMessgingService extends FirebaseMessagingService {
 
         Log.v("ajtrial", "at 254 in app class shownewmessage arrived hit");
         //this executes when notification is received ( worked : fg only )
+        // DeliveryInterface deliveryInterface = (DeliveryInterface) OptionMoneyMaker.getHomeFragmentContext();
         DeliveryInterface deliveryInterface = (DeliveryInterface) OptionMoneyMaker.getHomeFragmentContext();
         deliveryInterface.getUpdatedPayload(notifData);
+
+        DeliveryInterface deliveryInterface1 = (DeliveryInterface) OptionMoneyMaker.getMessageDetailActivity();
+        deliveryInterface1.getUpdatedPayload(notifData);
+
 
     }
 
@@ -181,18 +187,70 @@ public class FBMessgingService extends FirebaseMessagingService {
 
         String channel_id = "OMM_NOTIFICATIONS";
 
+        Spanned spannedText;
+
+        String tempMsg = content.getMessage();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            spannedText = Html.fromHtml(tempMsg, Html.FROM_HTML_MODE_COMPACT);
+        } else {
+            spannedText = Html.fromHtml(tempMsg);
+        }
+
+        tempMsg = spannedText.toString();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            spannedText = Html.fromHtml(tempMsg, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH);
+        } else {
+            spannedText = Html.fromHtml(tempMsg);
+        }
+
+        tempMsg = spannedText.toString();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            spannedText = Html.fromHtml(tempMsg, Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            spannedText = Html.fromHtml(tempMsg);
+        }
+
+        tempMsg = spannedText.toString();
+        int first, second;
+        Log.v("MSGDEMO", "Original String : " + tempMsg);
+        if (tempMsg.contains("<")) {
+
+            do {
+
+                first = tempMsg.indexOf("<");
+                second = tempMsg.indexOf(">");
+
+                String toRemove = tempMsg.substring(first, second + 1);
+                tempMsg = tempMsg.replace(toRemove, "");
+
+                Log.v("MSGDEMO", "modified String : " + tempMsg);
+
+            } while (tempMsg.contains("<"));
+
+        }
+
+        Log.v("MSGDEMO", "final String : " + tempMsg);
+
+        // spannedText = Html.fromHtml(tempMsg);
         Notification notification = new NotificationCompat.Builder(this, "OMM")
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(content.getTitle())
-                .setContentText(Html.fromHtml(content.getMessage()))
+                .setContentText(tempMsg)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setChannelId(channel_id)
                 .build();
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(id, notification);
+        try {
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.notify(id, notification);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
 
     }

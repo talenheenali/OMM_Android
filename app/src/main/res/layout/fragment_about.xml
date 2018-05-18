@@ -9,7 +9,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/tv_version"
+        android:layout_above="@+id/bottomData"
         android:layout_alignParentTop="true"
         android:scrollbars="vertical">
 
@@ -39,16 +39,84 @@
         </LinearLayout>
     </ScrollView>
 
-    <TextView
-        android:id="@+id/tv_version"
-        android:layout_width="fill_parent"
+    <LinearLayout
+
+        android:id="@+id/bottomData"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_gravity="center"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:gravity="center_horizontal"
-        android:text="Version: "
-        android:textColor="@color/app_date_color"
-        android:textSize="14dp" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:gravity="left|start"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvUserId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:foregroundGravity="left"
+            android:gravity="left"
+            android:text="User Id : "
+            android:textColor="@color/app_date_color"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/tvOsName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:gravity="left"
+            android:text="OS : "
+            android:textColor="@color/app_date_color"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/tvOsVersionNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:gravity="left"
+            android:text="OS Ver : "
+            android:textColor="@color/app_date_color"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/tvAppVer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:gravity="left"
+            android:text="Application Ver : "
+            android:textColor="@color/app_date_color"
+            android:textSize="14dp" />
+
+        <TextView
+
+            android:id="@+id/tvShowPlayerId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="Show Device Id"
+            android:textColor="@color/app_date_color"
+            android:textSize="14dp"
+            android:textStyle="italic" />
+
+    </LinearLayout>
+
 </RelativeLayout>

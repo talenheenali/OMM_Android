@@ -275,4 +275,9 @@ public class SessionManager {
         editor.commit();
 
     }
+
+    public String getEmailId() {
+
+        return pref.getString(KEY_EMAIL, "");
+    }
 }

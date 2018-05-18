@@ -56,6 +56,7 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_detail);
 
+        OptionMoneyMaker.setMessageDetailActivity(MessageDetailActivity.this);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         //txtMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, session.getFontSize());
@@ -205,7 +206,7 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
     @Override
     public void getUpdatedPayload(MessageData notificationPayload) {
 
-        Log.v("ajtrial", "at 208 in MessageDetailActivity data is " + notificationPayload);
+        Log.v("current", "at 208 in MessageDetailActivity data is " + notificationPayload);
 
         try {
 
@@ -213,8 +214,8 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
             Ringtone r = RingtoneManager.getRingtone(OptionMoneyMaker.getInstance(), notification);
             r.play();
 
-            Log.v("jsondata", "body - " + notificationPayload.getMessage());
-            Log.v("jsondata", "title - " + notificationPayload.getTitle());
+            Log.v("current", "body - " + notificationPayload.getMessage());
+            Log.v("current", "title - " + notificationPayload.getTitle());
 
             if (notificationPayload.getMessage().equals("") || notificationPayload.getMessage().isEmpty()) {
                 notificationPayload.setMessage("--");
@@ -229,7 +230,7 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
             notificationPayload.setDateTime(convertTimeToLocal(notificationPayload.getDateTime()));
         //    messageAdapter.addNewItemToList(notificationPayload);
 
-            Log.v("ajtrial", "at 226 in home frag add new item complete hit");
+            Log.v("current", "at 226 in MSGDetails add new item complete hit");
 
         //    recyclerView.smoothScrollToPosition(0);
 
