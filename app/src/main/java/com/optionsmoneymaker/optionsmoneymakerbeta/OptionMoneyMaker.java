@@ -38,11 +38,9 @@ public class OptionMoneyMaker extends Application {
         return messageDetailActivity;
     }
 
-
     public static void setMessageDetailActivity(MessageDetailActivity messageDetailActivity) {
         OptionMoneyMaker.messageDetailActivity = messageDetailActivity;
     }
-
 
     public static MainActivity getMainActivityContext() {
         return mainActivityContext;
@@ -91,6 +89,7 @@ public class OptionMoneyMaker extends Application {
         Log.v("appData", "app in background " + isInBackground);
         return isInBackground;
     }
+
 
     @Override
     public void onCreate() {

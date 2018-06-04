@@ -2,6 +2,7 @@ package com.optionsmoneymaker.optionsmoneymakerbeta;
 
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.os.Build;
@@ -78,15 +79,20 @@ public class MainActivity extends BaseActivity implements FragmentDrawer.Fragmen
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
             String id = "OMM_NOTIFICATIONS";
             // The user-visible name of the channel.
             CharSequence name = "OMM";
             // The user-visible description of the channel.
             String description = "OMM NOTIFICATIONS";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+            NotificationChannelGroup channelGroup = new NotificationChannelGroup("OMM_GROUP", "Options Money Maker");
             NotificationChannel mChannel = new NotificationChannel(id, name, importance);
             // Configure the notification channel.
             mChannel.setDescription(description);
+
+            notificationManager.createNotificationChannelGroup(channelGroup);
             notificationManager.createNotificationChannel(mChannel);
         }
 

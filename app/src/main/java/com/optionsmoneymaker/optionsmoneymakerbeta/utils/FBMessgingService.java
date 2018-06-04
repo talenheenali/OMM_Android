@@ -1,6 +1,8 @@
 package com.optionsmoneymaker.optionsmoneymakerbeta.utils;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -40,6 +42,15 @@ public class FBMessgingService extends FirebaseMessagingService {
     MessageData messageData;
     SessionManager session;
     ConnectionDetector cd;
+    String channel_id = "OMM_NOTIFICATIONS";
+    MessageData globalContent;
+    String tempMsg;
+    PendingIntent pendingIntent;
+    NotificationManager notificationManager;
+    NotificationChannelGroup channelGroup;
+    Notification notification;
+    String notifGroup = "OMM_GROUP";
+    NotificationChannel mChannel;
     private int badgeCount = 0;
 
     @Override
@@ -126,8 +137,34 @@ public class FBMessgingService extends FirebaseMessagingService {
 
     }
 
+    public void createNotifInits() {
+
+
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            String id = "OMM";
+            // The user-visible name of the channel.
+            CharSequence name = "OMM";
+            // The user-visible description of the channel.
+            String description = "OMM";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+            channelGroup = new NotificationChannelGroup(notifGroup, "Options Money Maker");
+            mChannel = new NotificationChannel(id, name, importance);
+            // Configure the notification channel.
+            mChannel.setDescription(description);
+
+            notificationManager.createNotificationChannelGroup(channelGroup);
+            notificationManager.createNotificationChannel(mChannel);
+        }
+
+    }
+
     public void showNotification(MessageData content) {
 
+        globalContent = content;
         if (null == cd) {
             cd = new ConnectionDetector(getApplicationContext());
         }
@@ -182,14 +219,13 @@ public class FBMessgingService extends FirebaseMessagingService {
         intent.putExtra(Constants.TYPE, "notification");
         int id = OptionMoneyMaker.getInstance().getCounter();
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), id, intent,
+        pendingIntent = PendingIntent.getActivity(getApplicationContext(), id, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        String channel_id = "OMM_NOTIFICATIONS";
 
         Spanned spannedText;
 
-        String tempMsg = content.getMessage();
+        tempMsg = content.getMessage();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             spannedText = Html.fromHtml(tempMsg, Html.FROM_HTML_MODE_COMPACT);
         } else {
@@ -229,28 +265,32 @@ public class FBMessgingService extends FirebaseMessagingService {
 
         }
 
+        //    notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
         Log.v("MSGDEMO", "final String : " + tempMsg);
-
-        // spannedText = Html.fromHtml(tempMsg);
-        Notification notification = new NotificationCompat.Builder(this, "OMM")
-                .setSmallIcon(R.mipmap.ic_static_notif)
-                .setContentTitle(content.getTitle())
-                .setContentText(tempMsg)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setChannelId(channel_id)
-                .build();
-
         try {
 
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            createNotifInits();
+
+            // spannedText = Html.fromHtml(tempMsg);
+
+            notification = new NotificationCompat.Builder(this, "OMM")
+                    .setSmallIcon(R.mipmap.ic_static_notif)
+                    .setContentTitle(content.getTitle())
+                    .setContentText(tempMsg)
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingIntent)
+                    .setGroup(notifGroup)
+                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                    .setChannelId(channel_id)
+                    .build();
+
             notificationManager.notify(id, notification);
+
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
 
     }
