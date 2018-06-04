@@ -74,6 +74,7 @@ public class MainActivity extends BaseActivity implements FragmentDrawer.Fragmen
 
         }
 
+        //   new OptionMoneyMaker().initNotifService();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);

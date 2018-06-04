@@ -233,7 +233,7 @@ public class FBMessgingService extends FirebaseMessagingService {
 
         // spannedText = Html.fromHtml(tempMsg);
         Notification notification = new NotificationCompat.Builder(this, "OMM")
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.mipmap.ic_static_notif)
                 .setContentTitle(content.getTitle())
                 .setContentText(tempMsg)
                 .setAutoCancel(true)

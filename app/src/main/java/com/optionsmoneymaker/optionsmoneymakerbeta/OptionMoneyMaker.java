@@ -38,6 +38,7 @@ public class OptionMoneyMaker extends Application {
         return messageDetailActivity;
     }
 
+
     public static void setMessageDetailActivity(MessageDetailActivity messageDetailActivity) {
         OptionMoneyMaker.messageDetailActivity = messageDetailActivity;
     }
