@@ -125,19 +125,22 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
                             Collections.reverse(list);
                             messageAdapter = new NewMessageAdapter(getActivity(), list);
                             recyclerView.setAdapter(messageAdapter);
-                            //  progressBar.setVisibility(View.GONE);
+                            progressBar.setVisibility(View.GONE);
 
                         } else if (main.getInt("status") == 0) {
                             Toast.makeText(getActivity(), "No Data Found.", Toast.LENGTH_SHORT).show();
+                            progressBar.setVisibility(View.GONE);
                         }
 
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        progressBar.setVisibility(View.GONE);
                     }
                 }
 
                 @Override
                 public void failure(RetrofitError error) {
+                    progressBar.setVisibility(View.GONE);
                     Log.e("Home", "API failure " + error);
                     dismiss();
                 }

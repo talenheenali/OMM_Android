@@ -57,7 +57,7 @@ public class MainActivity extends BaseActivity implements FragmentDrawer.Fragmen
 
         if (FirebaseInstanceId.getInstance().getToken() != session.getRegisterID()) {
 
-            RestClient.getMoneyMaker().updateFirebaseToken(FirebaseInstanceId.getInstance().getToken(), session.getUserID(), new Callback<TokenUpdateResult>() {
+            RestClient.getMoneyMaker().updateFirebaseToken(FirebaseInstanceId.getInstance().getToken(), session.getUserID(), "Android", new Callback<TokenUpdateResult>() {
                 @Override
                 public void success(TokenUpdateResult tokenUpdateResult, Response response) {
 

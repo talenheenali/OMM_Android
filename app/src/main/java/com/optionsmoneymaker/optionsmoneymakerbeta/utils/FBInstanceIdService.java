@@ -28,7 +28,7 @@ public class FBInstanceIdService extends FirebaseInstanceIdService {
 
         Log.v("FBTOKEN", "REFRESH TOKEN \n " + FirebaseInstanceId.getInstance().getToken());
 
-        RestClient.getMoneyMaker().updateFirebaseToken(FirebaseInstanceId.getInstance().getToken(), sessionManager.getUserID(), new Callback<TokenUpdateResult>() {
+        RestClient.getMoneyMaker().updateFirebaseToken(FirebaseInstanceId.getInstance().getToken(), sessionManager.getUserID(), "Android", new Callback<TokenUpdateResult>() {
             @Override
             public void success(TokenUpdateResult tokenUpdateResult, Response response) {
 

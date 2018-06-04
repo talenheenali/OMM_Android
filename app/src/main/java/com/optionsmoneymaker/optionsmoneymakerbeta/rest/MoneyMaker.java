@@ -24,7 +24,9 @@ public interface MoneyMaker {
                @Query("username") String username,
                @Query("password") String password,
                @Query("device_id") String device_token,
+               @Query("os") String os,
                Callback<SuccessResult> callback);
+    //modified here
 
     @GET("/omm_api.php")
     void latestMessages(@Query("api_call") String apiName,
@@ -78,11 +80,14 @@ public interface MoneyMaker {
     @GET("/logout")
     void logout(@Query("user_id") String userID,
                 @Query("device_token") String regID,
+                @Query("os") String os,
                 Callback<SuccessResult> callback);
+    //modified here
 
     @POST("/update_device_token")
     void updateFirebaseToken(@Query("device_id") String newToken,
                              @Query("userId") String userId,
+                             @Query("os") String os,
                              Callback<TokenUpdateResult> callBack);
-
+    //modified here
 }

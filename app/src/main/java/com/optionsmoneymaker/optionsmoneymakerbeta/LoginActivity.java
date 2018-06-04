@@ -98,7 +98,7 @@ public class LoginActivity extends BaseActivity {
                 Log.e("FBTOKEN", "registrationId:" + token);
                 if (!token.equals(session.getRegisterID())) {
 
-                    RestClient.getMoneyMaker().updateFirebaseToken(FirebaseInstanceId.getInstance().getToken(), session.getUserID(), new Callback<TokenUpdateResult>() {
+                    RestClient.getMoneyMaker().updateFirebaseToken(FirebaseInstanceId.getInstance().getToken(), session.getUserID(), "Android", new Callback<TokenUpdateResult>() {
                         @Override
                         public void success(TokenUpdateResult tokenUpdateResult, Response response) {
 
@@ -125,7 +125,7 @@ public class LoginActivity extends BaseActivity {
 //        }
 //      });
 
-            RestClient.getMoneyMaker().login("api_login", eTxtUserName.getText().toString().trim(), eTxtPassword.getText().toString(), session.getRegisterID(), new Callback<SuccessResult>() {
+            RestClient.getMoneyMaker().login("api_login", eTxtUserName.getText().toString().trim(), eTxtPassword.getText().toString(), session.getRegisterID(), "Android", new Callback<SuccessResult>() {
                 @Override
                 public void success(SuccessResult result, Response response) {
 

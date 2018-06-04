@@ -10,8 +10,8 @@ android {
         applicationId 'com.optionsmoneymaker.optionsmoneymakerbeta'
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 19
-        versionName "4.1"
+        versionCode 21
+        versionName "4.3"
 
 //        manifestPlaceholders = [onesignal_app_id : "6d7c78c6-789e-40d8-a307-0b70887be901",
 //                                // Project number pulled from dashboard, local value is ignored.

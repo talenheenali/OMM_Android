@@ -141,7 +141,7 @@ public class BaseActivity extends AppCompatActivity {
 
         try {
 
-            RestClient.getMoneyMaker().logout(session.getUserID(), session.getRegisterID(), new Callback<SuccessResult>() {
+            RestClient.getMoneyMaker().logout(session.getUserID(), session.getRegisterID(), "Android", new Callback<SuccessResult>() {
                         @Override
                         public void success(SuccessResult successResult, Response response) {
                             if ((int) successResult.getStatus() == 1) {

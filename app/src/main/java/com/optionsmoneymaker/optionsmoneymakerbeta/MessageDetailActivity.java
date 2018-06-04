@@ -111,6 +111,7 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
                 } catch (Exception e) {
 
                 }
+
             } else {
                 //toast(getResources().getString(R.string.no_internet));
             }
@@ -185,6 +186,7 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
                         txtDate.setText(strTime);
 
                     } else if ((int) result.getStatus() == 0) {
+
                         toast("No Data Found");
                     }
                 }
