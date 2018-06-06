@@ -18,7 +18,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.optionsmoneymaker.optionsmoneymakerbeta.model.MessageData;
-import com.optionsmoneymaker.optionsmoneymakerbeta.model.MessageDetail;
 import com.optionsmoneymaker.optionsmoneymakerbeta.model.NotificationResult;
 import com.optionsmoneymaker.optionsmoneymakerbeta.rest.RestClient;
 import com.optionsmoneymaker.optionsmoneymakerbeta.sqlitedb.DatabaseHandler;
@@ -50,6 +49,9 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
     @BindView(R.id.txt_message)
     TextView txtTitle;
     String formattedDate;
+
+    MessageData model;
+    String strTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +120,7 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
         } else if (getIntent().getStringExtra(Constants.TYPE).equalsIgnoreCase("notification")) {
             if (cd.isConnectingToInternet()) {
                 hideKeyboard();
+                model = (MessageData) getIntent().getSerializableExtra("Model");
                 messageDetail(getIntent().getStringExtra(Constants.ID));
             } else {
                 toast(getResources().getString(R.string.no_internet));
@@ -164,44 +167,55 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
 
     private void messageDetail(String id) {
 
-        showProgressbar("Message Detail");
+        //  showProgressbar("Message Detail");
 
-        try {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
+        strTime = dateFormatter.format(new Date());
 
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
-            String strTime = dateFormatter.format(new Date());
+        webView.loadDataWithBaseURL("", model.getMessage(), mimeType, encoding, "");
+        txtProName.setText(model.getProductName());
+        //    txtProName.setText("AppTet");
+        txtTitle.setText(model.getTitle());
+        strTime = model.getDateTime();
+        strTime = convertTimeToLocal(strTime);
+        txtDate.setText(strTime);
 
-            RestClient.getMoneyMaker().messageDetail(id, strTime, session.getUserID(), new Callback<MessageDetail>() {
-                @Override
-                public void success(MessageDetail result, Response response) {
-
-                    if ((int) result.getStatus() == 1) {
-                        webView.loadDataWithBaseURL("", result.getMessage(), mimeType, encoding, "");
-                        txtProName.setText(result.getProductName());
-                        //    txtProName.setText("AppTet");
-                        txtTitle.setText(result.getTitle());
-
-                        String strTime = result.getDateTime();
-                        strTime = convertTimeToLocal(strTime);
-                        txtDate.setText(strTime);
-
-                    } else if ((int) result.getStatus() == 0) {
-
-                        toast("No Data Found");
-                    }
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    Log.e("Message Detail", "API failure " + error);
-                }
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            dismiss();
-        }
+//        try {
+//
+//            RestClient.getMoneyMaker().messageDetail(id, strTime, session.getUserID(), new Callback<MessageDetail>() {
+//                @Override
+//                public void success(MessageDetail result, Response response) {
+//
+//                    if ((int) result.getStatus() == 1) {
+//                        webView.loadDataWithBaseURL("", result.getMessage(), mimeType, encoding, "");
+//                        txtProName.setText(result.getProductName());
+//                        //    txtProName.setText("AppTet");
+//                        txtTitle.setText(result.getTitle());
+//
+//                        String strTime = result.getDateTime();
+//                        strTime = convertTimeToLocal(strTime);
+//                        txtDate.setText(strTime);
+//                        dismiss();
+//
+//                    } else if ((int) result.getStatus() == 0) {
+//
+//                        toast("No Data Found");
+//                        dismiss();
+//                    }
+//                }
+//
+//                @Override
+//                public void failure(RetrofitError error) {
+//                    Log.e("Message Detail", "API failure " + error);
+//                    dismiss();
+//                }
+//            });
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            dismiss();
+//        }
 
     }
 
@@ -230,11 +244,11 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
             new DatabaseHandler().storeNewNotif(notificationPayload);
 
             notificationPayload.setDateTime(convertTimeToLocal(notificationPayload.getDateTime()));
-        //    messageAdapter.addNewItemToList(notificationPayload);
+            //    messageAdapter.addNewItemToList(notificationPayload);
 
             Log.v("current", "at 226 in MSGDetails add new item complete hit");
 
-        //    recyclerView.smoothScrollToPosition(0);
+            //    recyclerView.smoothScrollToPosition(0);
 
             LayoutInflater inflater = this.getLayoutInflater();
             View dialogView = inflater.inflate(R.layout.new_message_dialog, null);

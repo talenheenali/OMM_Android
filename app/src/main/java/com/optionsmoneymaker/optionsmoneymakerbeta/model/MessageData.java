@@ -3,10 +3,12 @@ package com.optionsmoneymaker.optionsmoneymakerbeta.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by Sagar on 10/13/2016.
  */
-public class MessageData {
+public class MessageData implements Serializable {
 
     @SerializedName("title")
     @Expose

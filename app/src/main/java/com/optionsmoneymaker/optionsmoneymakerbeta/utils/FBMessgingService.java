@@ -217,11 +217,11 @@ public class FBMessgingService extends FirebaseMessagingService {
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Constants.ID, content.getId());
         intent.putExtra(Constants.TYPE, "notification");
+        intent.putExtra("Model", content);
         int id = OptionMoneyMaker.getInstance().getCounter();
 
         pendingIntent = PendingIntent.getActivity(getApplicationContext(), id, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-
 
         Spanned spannedText;
 
