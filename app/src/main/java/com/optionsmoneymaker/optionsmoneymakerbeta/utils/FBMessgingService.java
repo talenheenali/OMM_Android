@@ -51,6 +51,7 @@ public class FBMessgingService extends FirebaseMessagingService {
     Notification notification;
     String notifGroup = "OMM_GROUP";
     NotificationChannel mChannel;
+    NotificationCompat.InboxStyle inboxStyle;
     private int badgeCount = 0;
 
     @Override
@@ -138,7 +139,6 @@ public class FBMessgingService extends FirebaseMessagingService {
     }
 
     public void createNotifInits() {
-
 
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
@@ -283,10 +283,13 @@ public class FBMessgingService extends FirebaseMessagingService {
                     .setGroup(notifGroup)
                     .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                     .setChannelId(channel_id)
+                    .setStyle(new NotificationCompat.InboxStyle())
+                    .setGroupSummary(true)
                     .build();
 
-            notificationManager.notify(id, notification);
+            inboxStyle = new NotificationCompat.InboxStyle();
 
+            notificationManager.notify(id, notification);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -294,6 +297,4 @@ public class FBMessgingService extends FirebaseMessagingService {
 
 
     }
-
-
 }

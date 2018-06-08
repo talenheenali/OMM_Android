@@ -6,6 +6,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -56,6 +57,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
     ArrayList<MessageData> list;
     RecyclerView.LayoutManager mLayoutManager;
     String formattedDate;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -78,7 +80,27 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
         Log.v("ajtrial", "at 75 in homefrag onCreateView hit");
         recyclerView = rootView.findViewById(R.id.recyclerView);
         progressBar = rootView.findViewById(R.id.progressBar);
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh_layout);
 
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.v("SWIPEREFRESH", "setOnRefreshListener hit at 90");
+                swipeRefreshLayout.setRefreshing(true);
+
+                reload();
+            }
+        });
+
+//        swipeRefreshLayout.post(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                            //            swipeRefreshLayout.setRefreshing(true);
+//
+//                                        Log.v("SWIPEREFRESH","setOnRefreshListener post hit at 99");
+//                                    }
+//                                }
+//        );
         // Inflate the layout for this fragment
         return rootView;
 
@@ -98,6 +120,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
         list = new ArrayList<MessageData>();
 
         progressBar.setVisibility(View.VISIBLE);
+
         reload();
 
     }
@@ -110,6 +133,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
                 @Override
                 public void success(Response result, Response response) {
                     dismiss();
+                    swipeRefreshLayout.setRefreshing(false);
                     try {
                         JSONObject main = new JSONObject(new String(((TypedByteArray) response.getBody()).getBytes()));
 
@@ -143,6 +167,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
                     progressBar.setVisibility(View.GONE);
                     Log.e("Home", "API failure " + error);
                     dismiss();
+                    swipeRefreshLayout.setRefreshing(false);
                 }
             });
 
