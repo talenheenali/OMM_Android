@@ -48,9 +48,10 @@ public class FBMessgingService extends FirebaseMessagingService {
     PendingIntent pendingIntent;
     NotificationManager notificationManager;
     NotificationChannelGroup channelGroup;
-    Notification notification;
+    //Notification notification;
     String notifGroup = "OMM_GROUP";
     NotificationChannel mChannel;
+    boolean isShowing;
     NotificationCompat.InboxStyle inboxStyle;
     private int badgeCount = 0;
 
@@ -98,6 +99,7 @@ public class FBMessgingService extends FirebaseMessagingService {
                         Log.v("ajtrial", "app is in background");
                         showBadge();
                         showNotification(messageData);
+
 
                     }
 
@@ -158,6 +160,9 @@ public class FBMessgingService extends FirebaseMessagingService {
 
             notificationManager.createNotificationChannelGroup(channelGroup);
             notificationManager.createNotificationChannel(mChannel);
+            inboxStyle = new NotificationCompat.InboxStyle();
+
+
         }
 
     }
@@ -274,22 +279,51 @@ public class FBMessgingService extends FirebaseMessagingService {
 
             // spannedText = Html.fromHtml(tempMsg);
 
-            notification = new NotificationCompat.Builder(this, "OMM")
-                    .setSmallIcon(R.mipmap.ic_static_notif)
-                    .setContentTitle(content.getTitle())
-                    .setContentText(tempMsg)
-                    .setAutoCancel(true)
-                    .setContentIntent(pendingIntent)
-                    .setGroup(notifGroup)
-                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                    .setChannelId(channel_id)
-                    .setStyle(new NotificationCompat.InboxStyle())
-                    .setGroupSummary(true)
-                    .build();
+            isShowing = true;
 
-            inboxStyle = new NotificationCompat.InboxStyle();
+            if ("0".equals(new SharedPrefsOperations(this).getPreferencesData("ActiveNotifs"))) {
 
-            notificationManager.notify(id, notification);
+                String tempData = new SharedPrefsOperations(this).getPreferencesData("ActiveNotifs");
+                Log.v("NotifDebug", tempData + " - primary notif hit : " + content.getTitle());
+
+                Notification notification = new NotificationCompat.Builder(this, "OMM")
+                        .setSmallIcon(R.mipmap.ic_static_notif)
+                        .setContentTitle(content.getTitle())
+                        .setContentText(tempMsg)
+                        .setAutoCancel(true)
+                        .setContentIntent(pendingIntent)
+                        .setGroup(notifGroup)
+                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                        .setChannelId(channel_id)
+                        .setStyle(inboxStyle)
+                        .setGroupSummary(true)
+                        .build();
+
+                notificationManager.notify(id, notification);
+                new SharedPrefsOperations(this).storePreferencesData("ActiveNotifs", "1");
+
+            } else {
+
+                String tempData = new SharedPrefsOperations(this).getPreferencesData("ActiveNotifs");
+                Log.v("NotifDebug", tempData + " - secondary notif hit with id " + id + " , data : " + content.getTitle());
+
+                Notification notification = new NotificationCompat.Builder(this, "OMM")
+                        .setSmallIcon(R.mipmap.ic_static_notif)
+                        .setContentTitle(content.getTitle())
+                        .setContentText(tempMsg)
+                        .setAutoCancel(true)
+                        .setContentIntent(pendingIntent)
+                        .setGroup(notifGroup)
+                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                        .setChannelId(channel_id)
+                        .setStyle(inboxStyle)
+                        .build();
+
+                notificationManager.notify(id, notification);
+                new SharedPrefsOperations(this).storePreferencesData("ActiveNotifs", "1");
+
+            }
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -297,4 +331,6 @@ public class FBMessgingService extends FirebaseMessagingService {
 
 
     }
+
+
 }

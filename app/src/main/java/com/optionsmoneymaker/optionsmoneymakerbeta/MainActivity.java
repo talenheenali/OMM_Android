@@ -23,6 +23,7 @@ import com.optionsmoneymaker.optionsmoneymakerbeta.fragment.HomeFragment;
 import com.optionsmoneymaker.optionsmoneymakerbeta.fragment.SettingFragment;
 import com.optionsmoneymaker.optionsmoneymakerbeta.model.TokenUpdateResult;
 import com.optionsmoneymaker.optionsmoneymakerbeta.rest.RestClient;
+import com.optionsmoneymaker.optionsmoneymakerbeta.utils.SharedPrefsOperations;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -94,6 +95,9 @@ public class MainActivity extends BaseActivity implements FragmentDrawer.Fragmen
 
             notificationManager.createNotificationChannelGroup(channelGroup);
             notificationManager.createNotificationChannel(mChannel);
+
+            new SharedPrefsOperations(MainActivity.this).storePreferencesData("ActiveNotifs", "0");
+
         }
 
     }

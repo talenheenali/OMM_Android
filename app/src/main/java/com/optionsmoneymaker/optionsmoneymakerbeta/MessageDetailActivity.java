@@ -23,6 +23,7 @@ import com.optionsmoneymaker.optionsmoneymakerbeta.rest.RestClient;
 import com.optionsmoneymaker.optionsmoneymakerbeta.sqlitedb.DatabaseHandler;
 import com.optionsmoneymaker.optionsmoneymakerbeta.utils.Constants;
 import com.optionsmoneymaker.optionsmoneymakerbeta.utils.DeliveryInterface;
+import com.optionsmoneymaker.optionsmoneymakerbeta.utils.SharedPrefsOperations;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -118,6 +119,9 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
                 //toast(getResources().getString(R.string.no_internet));
             }
         } else if (getIntent().getStringExtra(Constants.TYPE).equalsIgnoreCase("notification")) {
+
+            new SharedPrefsOperations(this).storePreferencesData("ActiveNotifs", "0");
+
             if (cd.isConnectingToInternet()) {
                 hideKeyboard();
                 model = (MessageData) getIntent().getSerializableExtra("Model");
