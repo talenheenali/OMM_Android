@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -99,7 +100,6 @@ public class FBMessgingService extends FirebaseMessagingService {
                         Log.v("ajtrial", "app is in background");
                         showBadge();
                         showNotification(messageData);
-
 
                     }
 
@@ -275,8 +275,8 @@ public class FBMessgingService extends FirebaseMessagingService {
         Log.v("MSGDEMO", "final String : " + tempMsg);
         try {
 
-            createNotifInits();
-
+            //createNotifInits();
+            notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             // spannedText = Html.fromHtml(tempMsg);
 
             isShowing = true;
@@ -290,16 +290,14 @@ public class FBMessgingService extends FirebaseMessagingService {
                         .setSmallIcon(R.mipmap.ic_static_notif)
                         .setContentTitle(content.getTitle())
                         .setContentText(tempMsg)
-                        .setAutoCancel(true)
                         .setContentIntent(pendingIntent)
                         .setGroup(notifGroup)
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                        .setChannelId(channel_id)
                         .setStyle(inboxStyle)
-                        .setGroupSummary(true)
                         .build();
 
                 notificationManager.notify(id, notification);
+
                 new SharedPrefsOperations(this).storePreferencesData("ActiveNotifs", "1");
 
             } else {
@@ -311,16 +309,19 @@ public class FBMessgingService extends FirebaseMessagingService {
                         .setSmallIcon(R.mipmap.ic_static_notif)
                         .setContentTitle(content.getTitle())
                         .setContentText(tempMsg)
-                        .setAutoCancel(true)
                         .setContentIntent(pendingIntent)
                         .setGroup(notifGroup)
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                        .setChannelId(channel_id)
                         .setStyle(inboxStyle)
                         .build();
 
                 notificationManager.notify(id, notification);
-                new SharedPrefsOperations(this).storePreferencesData("ActiveNotifs", "1");
+
+                if ("1".equals(new SharedPrefsOperations(this).getPreferencesData("ActiveNotifs"))) {
+                    initGroup();
+                }
+
+                new SharedPrefsOperations(this).storePreferencesData("ActiveNotifs", "2");
 
             }
 
@@ -331,6 +332,24 @@ public class FBMessgingService extends FirebaseMessagingService {
 
 
     }
+
+    public void initGroup() {
+
+        Notification summaryNotification =
+                new NotificationCompat.Builder(this, channel_id)
+                        .setContentTitle("Options Money Maker")
+                        .setContentText("New messages")
+                        .setSmallIcon(R.mipmap.ic_static_notif)
+                        .setStyle(new NotificationCompat.InboxStyle())
+                        .setGroup(notifGroup)
+                        .setGroupSummary(true)
+                        .build();
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify(0, summaryNotification);
+
+    }
+
 
 
 }
