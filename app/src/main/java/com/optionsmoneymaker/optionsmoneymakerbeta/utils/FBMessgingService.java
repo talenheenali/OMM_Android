@@ -169,6 +169,13 @@ public class FBMessgingService extends FirebaseMessagingService {
 
     public void showNotification(MessageData content) {
 
+        Log.v("NotifIncomingData","in fbmessingservice at 172");
+        Log.v("NotifIncomingData","id " + content.getId());
+        Log.v("NotifIncomingData","isRead " +content.getIsRead());
+        Log.v("NotifIncomingData","title "+content.getTitle());
+        Log.v("NotifIncomingData","mesg " +content.getMessage());
+        Log.v("NotifIncomingData","\n----\n----\n");
+
         globalContent = content;
         if (null == cd) {
             cd = new ConnectionDetector(getApplicationContext());
@@ -252,24 +259,7 @@ public class FBMessgingService extends FirebaseMessagingService {
         }
 
         tempMsg = spannedText.toString();
-        int first, second;
         Log.v("MSGDEMO", "Original String : " + tempMsg);
-        if (tempMsg.contains("<")) {
-
-            do {
-
-                first = tempMsg.indexOf("<");
-                second = tempMsg.indexOf(">");
-
-                String toRemove = tempMsg.substring(first, second + 1);
-                tempMsg = tempMsg.replace(toRemove, "");
-
-                Log.v("MSGDEMO", "modified String : " + tempMsg);
-
-            } while (tempMsg.contains("<"));
-
-        }
-
         //    notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         Log.v("MSGDEMO", "final String : " + tempMsg);

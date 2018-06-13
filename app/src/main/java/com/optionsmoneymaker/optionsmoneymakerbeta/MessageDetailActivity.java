@@ -126,6 +126,14 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
                 hideKeyboard();
                 model = (MessageData) getIntent().getSerializableExtra("Model");
                 messageDetail(getIntent().getStringExtra(Constants.ID));
+
+                Log.v("NotifIncomingData","in messgedetailsactivity at 130");
+                Log.v("NotifIncomingData","id " + model.getId());
+                Log.v("NotifIncomingData","isRead " +model.getIsRead());
+                Log.v("NotifIncomingData","title "+model.getTitle());
+                Log.v("NotifIncomingData","mesg " +model.getMessage());
+                Log.v("NotifIncomingData","\n----\n----\n");
+
             } else {
                 toast(getResources().getString(R.string.no_internet));
             }

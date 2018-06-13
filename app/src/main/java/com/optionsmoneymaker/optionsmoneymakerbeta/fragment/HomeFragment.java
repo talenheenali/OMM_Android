@@ -144,7 +144,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
 
                             Log.v("datalog", "at 195 homefrag " + main.toString());
 
-                            new DatabaseHandler().syncWithWeb(main.toString());
+                            new DatabaseHandler().syncWithWeb(main.toString() , list);
                             list = new DatabaseHandler().getAllNotifs();
                             Collections.reverse(list);
                             messageAdapter = new NewMessageAdapter(getActivity(), list);
@@ -251,6 +251,13 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
     public void getUpdatedPayload(MessageData notificationPayload) {
 
         Log.v("ajtrial", "at 208 in homefrag data is " + notificationPayload);
+        Log.v("NotifIncomingData","in homefrag at 254");
+        Log.v("NotifIncomingData","id " + notificationPayload.getId());
+        Log.v("NotifIncomingData","isRead " +notificationPayload.getIsRead());
+        Log.v("NotifIncomingData","title "+notificationPayload.getTitle());
+        Log.v("NotifIncomingData","mesg " +notificationPayload.getMessage());
+        Log.v("NotifIncomingData","\n----\n----\n");
+
 
         try {
 

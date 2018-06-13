@@ -84,6 +84,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("NOTIF_MESSAGE", messageDataModel.getMessage());
             values.put("NOTIF_ISREAD", messageDataModel.getIsRead());
 
+            Log.v("NotifIncomingData","in databasehandle at 87");
+            Log.v("NotifIncomingData","id " + messageDataModel.getId());
+            Log.v("NotifIncomingData","isRead " +messageDataModel.getIsRead());
+            Log.v("NotifIncomingData","title "+messageDataModel.getTitle());
+            Log.v("NotifIncomingData","mesg " +messageDataModel.getMessage());
+            Log.v("NotifIncomingData","\n----\n----\n");
+
+
             returnId = sqLiteDatabase.insertOrThrow(TABLE_NOTIFS_MASTER, null, values);
             Log.v("dbdemo", "newly inserted row id is = " + returnId + " , in table - " + TABLE_NOTIFS_MASTER);
 
@@ -187,7 +195,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     }
 
-    public void syncWithWeb(String rawJsonDataString) {
+    public void syncWithWeb(String rawJsonDataString, ArrayList<MessageData> oldList) {
 
         MessageData messageDataModel;
         ArrayList<MessageData> arrayList = new ArrayList<>();
@@ -206,7 +214,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
             if (jsonArray.length() > 0) {
 
-                deleteAllNotifs();
+
 
                 for (int i = 0; i < jsonArray.length(); i++) {
 
@@ -221,6 +229,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     arrayList.add(messageDataModel);
 
                 }
+
+                //check and set read unread status
+                for (int i = 0; i < oldList.size() ; i++) {
+
+                    if(oldList.get(i).getIsRead().equalsIgnoreCase("0")){
+
+                        for (int j = 0; j < arrayList.size(); j++) {
+
+                            if(arrayList.get(j).getId().equalsIgnoreCase(oldList.get(i).getId())){
+
+                                arrayList.get(j).setIsRead("0");
+                            }
+
+                        }
+
+                    }
+                }
+
+                // delete all the old notifications data
+                deleteAllNotifs();
 
                 //add data into db
                 for (int j = 0; j < arrayList.size(); j++) {
