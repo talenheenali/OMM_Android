@@ -284,6 +284,7 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
                 }
             });
 
+            if(!alertDialog.isShowing())
             alertDialog.show();
 
             if (!r.isPlaying()) {

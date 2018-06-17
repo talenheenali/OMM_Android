@@ -307,6 +307,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
                 }
             });
 
+            if(!alertDialog.isShowing())
             alertDialog.show();
 
             if (!r.isPlaying()) {
