@@ -76,6 +76,7 @@ public class AboutFragment extends BaseFragment {
 
         PackageInfo pInfo = null;
         try {
+
             pInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
             String version = pInfo.versionName;
 
@@ -124,7 +125,7 @@ public class AboutFragment extends BaseFragment {
                 }
             });
 
-        } catch (PackageManager.NameNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -142,24 +143,33 @@ public class AboutFragment extends BaseFragment {
         super.onDetach();
     }
 
-    private void aboutUS(){
-        showProgressbar("About US");
-        RestClient.getMoneyMaker().aboutUS("about_us", new Callback<About>() {
-            @Override
-            public void success(About result, Response response) {
-                dismiss();
-                if (result.getStatus() == 1) {
-                    tvAbout.setText(result.getData());
-                } else if (result.getStatus() == 0) {
-                    toast(result.getData());
-                }
-            }
+    private void aboutUS() {
+        try {
 
-            @Override
-            public void failure(RetrofitError error) {
-                Log.e("About US", "API failure " + error);
-                dismiss();
-            }
-        });
+            showProgressbar("About US");
+            RestClient.getMoneyMaker().aboutUS("about_us", new Callback<About>() {
+                @Override
+                public void success(About result, Response response) {
+
+
+                    dismiss();
+                    if (result.getStatus() == 1) {
+                        tvAbout.setText(result.getData());
+                    } else if (result.getStatus() == 0) {
+                        toast(result.getData());
+                    }
+
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    Log.e("About US", "API failure " + error);
+                    dismiss();
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
