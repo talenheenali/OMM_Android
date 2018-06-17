@@ -303,7 +303,8 @@ public class FBMessgingService extends FirebaseMessagingService {
                         .setContentIntent(pendingIntent)
                         .setGroup(notifGroup)
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                        .setStyle(inboxStyle)
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText(tempMsg))
                         .build();
 
                 notificationManager.notify(id, notification);
@@ -322,7 +323,8 @@ public class FBMessgingService extends FirebaseMessagingService {
                         .setContentIntent(pendingIntent)
                         .setGroup(notifGroup)
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                        .setStyle(inboxStyle)
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText(tempMsg))
                         .build();
 
                 notificationManager.notify(id, notification);
