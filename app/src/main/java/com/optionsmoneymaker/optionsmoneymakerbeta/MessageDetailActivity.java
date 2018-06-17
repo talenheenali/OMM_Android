@@ -1,6 +1,7 @@
 package com.optionsmoneymaker.optionsmoneymakerbeta;
 
 import android.app.NotificationManager;
+import android.content.DialogInterface;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -112,7 +113,7 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
                                 }
                             });
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
 
             } else {
@@ -125,14 +126,17 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
             if (cd.isConnectingToInternet()) {
                 hideKeyboard();
                 model = (MessageData) getIntent().getSerializableExtra("Model");
+                model.setIsRead("1");
+                new DatabaseHandler().updateNotif(model);
+
                 messageDetail(getIntent().getStringExtra(Constants.ID));
 
-                Log.v("NotifIncomingData","in messgedetailsactivity at 130");
-                Log.v("NotifIncomingData","id " + model.getId());
-                Log.v("NotifIncomingData","isRead " +model.getIsRead());
-                Log.v("NotifIncomingData","title "+model.getTitle());
-                Log.v("NotifIncomingData","mesg " +model.getMessage());
-                Log.v("NotifIncomingData","\n----\n----\n");
+                Log.v("NotifIncomingData", "in messgedetailsactivity at 130");
+                Log.v("NotifIncomingData", "id " + model.getId());
+                Log.v("NotifIncomingData", "isRead " + model.getIsRead());
+                Log.v("NotifIncomingData", "title " + model.getTitle());
+                Log.v("NotifIncomingData", "mesg " + model.getMessage());
+                Log.v("NotifIncomingData", "\n----\n----\n");
 
             } else {
                 toast(getResources().getString(R.string.no_internet));
@@ -140,41 +144,6 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
         }
 
         Log.v("current", "in MessageDetailActivity");
-    }
-
-    public String convertTimeToLocal(String timeString) {
-
-        try {
-
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-            Date date = df.parse(timeString);
-            df.setTimeZone(TimeZone.getDefault());
-            formattedDate = df.format(date);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return formattedDate;
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-        switch (id) {
-
-            case android.R.id.home:
-                this.finish();
-                startActivity(MainActivity.class);
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-
     }
 
     private void messageDetail(String id) {
@@ -191,6 +160,7 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
         strTime = model.getDateTime();
         strTime = convertTimeToLocal(strTime);
         txtDate.setText(strTime);
+
 
 //        try {
 //
@@ -231,6 +201,43 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
 
     }
 
+
+    public String convertTimeToLocal(String timeString) {
+
+        try {
+
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = df.parse(timeString);
+            df.setTimeZone(TimeZone.getDefault());
+            formattedDate = df.format(date);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return formattedDate;
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        switch (id) {
+
+            case android.R.id.home:
+                this.finish();
+                startActivity(MainActivity.class);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+
     @Override
     public void getUpdatedPayload(MessageData notificationPayload) {
 
@@ -265,8 +272,7 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
             LayoutInflater inflater = this.getLayoutInflater();
             View dialogView = inflater.inflate(R.layout.new_message_dialog, null);
 
-            AlertDialog.Builder builder;
-
+            final AlertDialog.Builder builder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 builder = new AlertDialog.Builder(MessageDetailActivity.this, android.R.style.Theme_DeviceDefault_Dialog_NoActionBar);
             } else {
@@ -275,18 +281,36 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
 
             builder.setView(dialogView);
             final AlertDialog alertDialog = builder.create();
+            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialogInterface) {
+                    new SharedPrefsOperations(MessageDetailActivity.this).storePreferencesData("alertShowing", "N");
+                }
+            });
+
+            alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialogInterface) {
+                    new SharedPrefsOperations(MessageDetailActivity.this).storePreferencesData("alertShowing", "N");
+                }
+            });
 
             Button btn = dialogView.findViewById(R.id.btnOk);
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    alertDialog.cancel();
+                    alertDialog.dismiss();
+                    new SharedPrefsOperations(MessageDetailActivity.this).storePreferencesData("alertShowing", "N");
                 }
             });
 
-            Log.v("alertlog","alert showing "+alertDialog.isShowing());
-            if(!alertDialog.isShowing())
-            alertDialog.show();
+            Log.v("alertlog", "alert showing " + alertDialog.isShowing());
+            if (!alertDialog.isShowing()) {
+
+                if ("N".equals(new SharedPrefsOperations(MessageDetailActivity.this).getPreferencesData("alertShowing")))
+                    alertDialog.show();
+                new SharedPrefsOperations(MessageDetailActivity.this).storePreferencesData("alertShowing", "Y");
+            }
 
             if (!r.isPlaying()) {
                 r.play();
