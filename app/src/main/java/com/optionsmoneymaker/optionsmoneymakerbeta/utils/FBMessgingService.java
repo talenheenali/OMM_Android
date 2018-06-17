@@ -10,6 +10,7 @@ import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.text.Html;
@@ -89,6 +90,8 @@ public class FBMessgingService extends FirebaseMessagingService {
                     messageData.setDateTime(remoteMessage.getData().get("notification_sent_time"));
                     messageData.setIsRead(remoteMessage.getData().get("notification_isread"));
 
+                    createNotifInits();
+
                     if (!isAppIsInBackground(getApplicationContext())) {
 
                         Log.v("ajtrial", "app is in foreground");
@@ -137,7 +140,6 @@ public class FBMessgingService extends FirebaseMessagingService {
         DeliveryInterface deliveryInterface1 = (DeliveryInterface) OptionMoneyMaker.getMessageDetailActivity();
         deliveryInterface1.getUpdatedPayload(notifData);
 
-
     }
 
     public void createNotifInits() {
@@ -169,12 +171,12 @@ public class FBMessgingService extends FirebaseMessagingService {
 
     public void showNotification(MessageData content) {
 
-        Log.v("NotifIncomingData","in fbmessingservice at 172");
-        Log.v("NotifIncomingData","id " + content.getId());
-        Log.v("NotifIncomingData","isRead " +content.getIsRead());
-        Log.v("NotifIncomingData","title "+content.getTitle());
-        Log.v("NotifIncomingData","mesg " +content.getMessage());
-        Log.v("NotifIncomingData","\n----\n----\n");
+        Log.v("NotifIncomingData", "in fbmessingservice at 172");
+        Log.v("NotifIncomingData", "id " + content.getId());
+        Log.v("NotifIncomingData", "isRead " + content.getIsRead());
+        Log.v("NotifIncomingData", "title " + content.getTitle());
+        Log.v("NotifIncomingData", "mesg " + content.getMessage());
+        Log.v("NotifIncomingData", "\n----\n----\n");
 
         globalContent = content;
         if (null == cd) {
@@ -259,15 +261,33 @@ public class FBMessgingService extends FirebaseMessagingService {
         }
 
         tempMsg = spannedText.toString();
-        Log.v("MSGDEMO", "Original String : " + tempMsg);
-        //    notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        Log.v("MSGDEMO", "final String : " + tempMsg);
+        //    notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         try {
 
-            //createNotifInits();
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+
+                StatusBarNotification notifs[] = notificationManager.getActiveNotifications();
+                Log.v("NOTIFDEBUG", "\n \n \n ->active notifs : " + notifs.length);
+                int count = 0;
+                if (notifs.length > 0) {
+
+                    for (int i = 0; i < notifs.length; i++) {
+                        if (notifs[i].getPackageName().equalsIgnoreCase(getPackageName())) {
+                             count++;
+                        }
+                    }
+
+                    Log.v("notifdebug", "fina count "+count);
+
+                    if(count > 0){
+                        new SharedPrefsOperations(this).storePreferencesData("ActiveNotifs", "1");
+                    }
+                }
+
+            }
+
             notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            // spannedText = Html.fromHtml(tempMsg);
 
             isShowing = true;
 
@@ -339,7 +359,6 @@ public class FBMessgingService extends FirebaseMessagingService {
         notificationManager.notify(0, summaryNotification);
 
     }
-
 
 
 }
