@@ -100,6 +100,7 @@ public class MainActivity extends BaseActivity implements FragmentDrawer.Fragmen
 
         }
 
+        new SharedPrefsOperations(MainActivity.this).storePreferencesData("alertShowing", "N");
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.optionsmoneymaker.optionsmoneymakerbeta.fragment;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -28,6 +29,7 @@ import com.optionsmoneymaker.optionsmoneymakerbeta.model.MessageEvent;
 import com.optionsmoneymaker.optionsmoneymakerbeta.rest.RestClient;
 import com.optionsmoneymaker.optionsmoneymakerbeta.sqlitedb.DatabaseHandler;
 import com.optionsmoneymaker.optionsmoneymakerbeta.utils.DeliveryInterface;
+import com.optionsmoneymaker.optionsmoneymakerbeta.utils.SharedPrefsOperations;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -144,7 +146,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
 
                             Log.v("datalog", "at 195 homefrag " + main.toString());
 
-                            new DatabaseHandler().syncWithWeb(main.toString() , list);
+                            new DatabaseHandler().syncWithWeb(main.toString(), list);
                             list = new DatabaseHandler().getAllNotifs();
                             Collections.reverse(list);
                             messageAdapter = new NewMessageAdapter(getActivity(), list);
@@ -251,12 +253,12 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
     public void getUpdatedPayload(MessageData notificationPayload) {
 
         Log.v("ajtrial", "at 208 in homefrag data is " + notificationPayload);
-        Log.v("NotifIncomingData","in homefrag at 254");
-        Log.v("NotifIncomingData","id " + notificationPayload.getId());
-        Log.v("NotifIncomingData","isRead " +notificationPayload.getIsRead());
-        Log.v("NotifIncomingData","title "+notificationPayload.getTitle());
-        Log.v("NotifIncomingData","mesg " +notificationPayload.getMessage());
-        Log.v("NotifIncomingData","\n----\n----\n");
+        Log.v("NotifIncomingData", "in homefrag at 254");
+        Log.v("NotifIncomingData", "id " + notificationPayload.getId());
+        Log.v("NotifIncomingData", "isRead " + notificationPayload.getIsRead());
+        Log.v("NotifIncomingData", "title " + notificationPayload.getTitle());
+        Log.v("NotifIncomingData", "mesg " + notificationPayload.getMessage());
+        Log.v("NotifIncomingData", "\n----\n----\n");
 
 
         try {
@@ -288,8 +290,7 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
             LayoutInflater inflater = this.getLayoutInflater();
             View dialogView = inflater.inflate(R.layout.new_message_dialog, null);
 
-            AlertDialog.Builder builder;
-
+            final AlertDialog.Builder builder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_DeviceDefault_Dialog_NoActionBar);
             } else {
@@ -298,17 +299,36 @@ public class HomeFragment extends BaseFragment implements DeliveryInterface, Cal
 
             builder.setView(dialogView);
             final AlertDialog alertDialog = builder.create();
+            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialogInterface) {
+                    new SharedPrefsOperations(getActivity()).storePreferencesData("alertShowing", "N");
+                }
+            });
+
+            alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialogInterface) {
+                    new SharedPrefsOperations(getActivity()).storePreferencesData("alertShowing", "N");
+                }
+            });
 
             Button btn = dialogView.findViewById(R.id.btnOk);
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    alertDialog.cancel();
+                    alertDialog.dismiss();
+                    new SharedPrefsOperations(getActivity()).storePreferencesData("alertShowing", "N");
                 }
             });
 
-            if(!alertDialog.isShowing())
-            alertDialog.show();
+            Log.v("alertlog", "alert showing " + alertDialog.isShowing());
+            if (!alertDialog.isShowing()) {
+
+                if ("N".equals(new SharedPrefsOperations(getActivity()).getPreferencesData("alertShowing")))
+                    alertDialog.show();
+                new SharedPrefsOperations(getActivity()).storePreferencesData("alertShowing", "Y");
+            }
 
             if (!r.isPlaying()) {
                 r.play();

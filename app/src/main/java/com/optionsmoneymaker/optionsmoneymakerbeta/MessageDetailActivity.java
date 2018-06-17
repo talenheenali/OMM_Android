@@ -284,6 +284,7 @@ public class MessageDetailActivity extends BaseActivity implements DeliveryInter
                 }
             });
 
+            Log.v("alertlog","alert showing "+alertDialog.isShowing());
             if(!alertDialog.isShowing())
             alertDialog.show();
 
